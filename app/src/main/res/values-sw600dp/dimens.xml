@@ -1,0 +1,4 @@
+<resources>
+    <!-- Tablet Size -->
+    <dimen name="ImageSlider_Size"> 400dp </dimen>
+</resources>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rectangle11"
+    tools:context="com.example.topza.piggy.Login">
+
+    <TextView
+        android:id="@+id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rectangle12"
+        android:gravity="center"
+        android:text="Login"
+        android:textColor="#ffffff"
+        android:textSize="20dp" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignBottom="@id/topbar"
+        android:background="#0f000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/group5" />
+
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/EditUsername"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:hint="Username"
+            android:singleLine="true"
+            app:met_baseColor="#ffffff"
+            app:met_iconLeft="@drawable/rectangle45"
+            app:met_primaryColor="#f3ac1d"
+            app:met_textColorHint="#fff"
+            app:met_underlineColor="#fff"
+            />
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/EditPin"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="Pin"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            app:met_baseColor="#ffffff"
+            app:met_iconLeft="@drawable/group7"
+            app:met_primaryColor="#f3ac1d"
+            app:met_underlineColor="#ffffff"
+            app:met_textColorHint="#fff"/>
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/EditActivateCode"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="Activate Code"
+            android:singleLine="true"
+            app:met_baseColor="#ffffff"
+            app:met_iconLeft="@drawable/star4"
+            app:met_primaryColor="#f3ac1d"
+            app:met_underlineColor="#fff"
+            app:met_textColorHint="#fff"/>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/bottombar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/rectangle12"
+        android:gravity="center"
+        android:text="Submit"
+        android:textColor="#ffffff"
+        android:textSize="20dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignTop="@id/bottombar"
+        android:background="#0f000000" />
+
+    <Button
+        android:id="@+id/submitbutton"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:background="#00ffffff" />
+
+</RelativeLayout>
