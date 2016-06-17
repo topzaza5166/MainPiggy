@@ -53,6 +53,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="30dp"/>
 
+
     <ImageView
         android:layout_width="@dimen/ImageSlider_Size"
         android:layout_height="wrap_content"

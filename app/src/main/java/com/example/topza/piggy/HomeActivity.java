@@ -1,7 +1,10 @@
 package com.example.topza.piggy;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.CountDownTimer;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
@@ -15,6 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -28,6 +34,8 @@ public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
     NavigationView navigation;
     BluetoothSPP bt;
+    SharedPreferences sp;
+    BalanceFragment balanceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,15 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         }
 
+        bt.setBluetoothStateListener(new BluetoothSPP.BluetoothStateListener() {
+            @Override
+            public void onServiceStateChanged(int state) {
+                if(state == BluetoothState.STATE_CONNECTED)
+                    bt.send(Double.toString(balanceFragment.getCountMoney()),true);
+                Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         bt.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
             public void onNewConnection(String name, String address) {
                 Log.i("Check", "New Connection - " + name + " - " + address);
@@ -63,6 +80,8 @@ public class HomeActivity extends AppCompatActivity {
                 Log.i("Check", "Auto connection started");
             }
         });
+
+
     }
 
     private void initInstances() {
@@ -85,6 +104,9 @@ public class HomeActivity extends AppCompatActivity {
 
         navigation = (NavigationView) findViewById(R.id.navigation);
         setNavigationItem();
+
+        sp = getPreferences(Context.MODE_PRIVATE);
+
     }
 
     private void setNavigationItem() {
@@ -141,8 +163,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-        BalanceFragment fragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        fragment.setBluetooth(bt);
+        balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
+        balanceFragment.setBluetooth(bt);
+        balanceFragment.setCountMoney((double) sp.getFloat("CountMoney",0));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putFloat("CountMoney",(float) balanceFragment.getCountMoney());
+        editor.commit();
     }
 
     @Override
@@ -170,4 +202,5 @@ public class HomeActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

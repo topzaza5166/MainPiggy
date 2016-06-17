@@ -12,11 +12,13 @@ import android.widget.TextView;
 import com.inthecheesefactory.thecheeselibrary.view.BaseCustomViewGroup;
 import com.inthecheesefactory.thecheeselibrary.view.state.BundleSavedState;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by nuuneoi on 11/16/2014.
  */
 public class CustomViewGroupTemplate extends BaseCustomViewGroup {
-    private ImageView customListItemImage;
+    ImageView customListItemImage;
     TextView customListTextMoney;
     TextView customListTextTime;
     TextView customListTextApp;
@@ -61,20 +63,21 @@ public class CustomViewGroupTemplate extends BaseCustomViewGroup {
         customListTextTime = (TextView) findViewById(R.id.CustomListTextTime);
     }
 
-    public void setCustomListItemImage(ImageView customListItemImage) {
-        this.customListItemImage = customListItemImage;
+
+    public void setCustomListItemImage(int ImageResource) {
+        customListItemImage.setImageResource(ImageResource);
     }
 
-    public void setCustomListTextMoney(TextView customListTextMoney) {
-        this.customListTextMoney = customListTextMoney;
+    public void setCustomListTextMoney(String TextMoney) {
+        customListTextMoney.setText(TextMoney);
     }
 
-    public void setCustomListTextApp(TextView customListTextApp) {
-        this.customListTextApp = customListTextApp;
+    public void setCustomListTextApp(String TextApp) {
+        customListTextApp.setText(TextApp);
     }
 
-    public void setCustomListTextTime(TextView customListTextTime) {
-        this.customListTextTime = customListTextTime;
+    public void setCustomListTextTime(String TextTime) {
+        customListTextTime.setText(TextTime);
     }
 
     private void initWithAttrs(AttributeSet attrs, int defStyleAttr, int defStyleRes) {
