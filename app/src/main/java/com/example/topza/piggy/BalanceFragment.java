@@ -222,22 +222,26 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
         Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
 
+
     }
 
     private void coinAnimation(final ImageView coin){
-        MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
+        coinSlider.setVisibility(View.INVISIBLE);
+        final MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
         Animation coinMoveAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_animation);
+        coin_sound.setVolume(80, 80);
         coinMoveAnimation.setAnimationListener(new Animation.AnimationListener(){
             public void onAnimationEnd(Animation animation) {
+                coinSlider.setVisibility(View.VISIBLE);
                 coin.setVisibility(View.GONE);
             }
             public void onAnimationRepeat(Animation animation) {}
-            public void onAnimationStart(Animation animation) {}
+            public void onAnimationStart(Animation animation) {
+                coin_sound.start();
+            }
         });
         coin.setVisibility(View.VISIBLE);
         coin.startAnimation(coinMoveAnimation);
-        coin_sound.setVolume(80, 80);
-        coin_sound.start();
     }
 
     public double getCountMoney() {
