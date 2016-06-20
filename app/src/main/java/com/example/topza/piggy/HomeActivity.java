@@ -11,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -65,9 +66,10 @@ public class HomeActivity extends AppCompatActivity {
         bt.setBluetoothStateListener(new BluetoothSPP.BluetoothStateListener() {
             @Override
             public void onServiceStateChanged(int state) {
-                if(state == BluetoothState.STATE_CONNECTED)
-                    bt.send(Double.toString(balanceFragment.getCountMoney()),true);
-                Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
+                if (state == BluetoothState.STATE_CONNECTED) {
+                    bt.send(Double.toString(balanceFragment.getCountMoney()), true);
+                    Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -164,8 +166,15 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        balanceFragment.setBluetooth(bt);
-        balanceFragment.setCountMoney((double) sp.getFloat("CountMoney",0));
+        balanceFragment.setCountMoney((double) sp.getFloat("CountMoney", 0));
+
+//      balanceFragment.setBluetooth(bt);
+
+    }
+
+    public void sendBluetoothText(String text) {
+        if (bt.getServiceState() == BluetoothState.STATE_CONNECTED)
+            bt.send(text, true);
     }
 
     @Override
@@ -173,7 +182,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onStop();
 
         SharedPreferences.Editor editor = sp.edit();
-        editor.putFloat("CountMoney",(float) balanceFragment.getCountMoney());
+        editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
         editor.commit();
     }
 

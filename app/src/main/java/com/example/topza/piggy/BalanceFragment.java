@@ -1,5 +1,6 @@
 package com.example.topza.piggy;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,7 +41,9 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     TextView textCountMoney;
     TextView bottomText;
     CountDownTimer countDownTimer;
-    BluetoothSPP bt;
+    ImageView coin1;
+    ImageView coin5;
+    ImageView coin10;
 
     double countMoney = 0.00;
     int tokenCountMoney = 5;
@@ -49,9 +53,9 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         super();
     }
 
-    public void setBluetooth(BluetoothSPP bluetooth) {
-        this.bt= bluetooth;
-    }
+//    public void setBluetooth(BluetoothSPP bluetooth) {
+//        this.bt = bluetooth;
+//    }
 
     public static BalanceFragment newInstance(double money) {
         BalanceFragment fragment = new BalanceFragment();
@@ -96,6 +100,10 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         };
 
         dbHelper = new DBHelper(getContext());
+
+        coin1 = (ImageView) rootView.findViewById(R.id.coin1Animation);
+        coin5 = (ImageView) rootView.findViewById(R.id.coin5Animation);
+        coin10 = (ImageView) rootView.findViewById(R.id.coin10Animation);
 
         initSlider();
     }
@@ -147,7 +155,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
-        outState.putDouble("CountMoney",countMoney);
+        outState.putDouble("CountMoney", countMoney);
     }
 
     /*
@@ -201,34 +209,42 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
         dbHelper.addHistory(history);
 
-        if (bt.getServiceState() == BluetoothState.STATE_CONNECTED)
-        bt.send(s, true);
+        ((HomeActivity)getActivity()).sendBluetoothText(s);
+
+        if (addMoney == "5.00")
+            coinAnimation(coin5);
+
+        if (addMoney == "1.00")
+
+            coinAnimation(coin1);
+        if (addMoney == "10.00")
+            coinAnimation(coin10);
 
         Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
 
     }
 
     private void coinAnimation(final ImageView coin){
-        TranslateAnimation animation = new TranslateAnimation(0, 0, 500, 0);
-        animation.setDuration(1000);
-        animation.setFillAfter(false);
-        animation.setAnimationListener(new Animation.AnimationListener(){
+        MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
+        Animation coinMoveAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_animation);
+        coinMoveAnimation.setAnimationListener(new Animation.AnimationListener(){
             public void onAnimationEnd(Animation animation) {
                 coin.setVisibility(View.GONE);
             }
             public void onAnimationRepeat(Animation animation) {}
             public void onAnimationStart(Animation animation) {}
         });
-
         coin.setVisibility(View.VISIBLE);
-        coin.startAnimation(animation);
+        coin.startAnimation(coinMoveAnimation);
+        coin_sound.setVolume(80, 80);
+        coin_sound.start();
     }
 
-    public double getCountMoney(){
+    public double getCountMoney() {
         return countMoney;
     }
 
-    public void setCountMoney(double cm){
+    public void setCountMoney(double cm) {
         countMoney = cm;
     }
 

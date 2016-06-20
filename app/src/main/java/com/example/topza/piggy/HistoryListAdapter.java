@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 public class HistoryListAdapter extends BaseAdapter {
 
     DBHelper dbHelper;
+    int count = 0;
 
     public void getDatabase(DBHelper db){
         dbHelper = db;
@@ -20,7 +21,7 @@ public class HistoryListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        int count = dbHelper.getCountDatabase();
+        count = dbHelper.getCountDatabase();
         return count;
     }
 
@@ -38,8 +39,8 @@ public class HistoryListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         HistoryTable historyTable = null;
 
-        if (position >= 0)
-            historyTable = dbHelper.getHistory(Integer.toString(position+1));
+        if (position < count)
+            historyTable = dbHelper.getHistory(Integer.toString(count-position));
 
         CustomViewGroupTemplate view;
 
