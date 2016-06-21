@@ -43,8 +43,7 @@ public class AccountFragment extends Fragment {
         // Init 'View' instance(s) with rootView.findViewById here
         listView = (ListView) rootView.findViewById(R.id.fragmentListView);
         historyListAdapter = new HistoryListAdapter();
-        dbHelper = new DBHelper(getContext());
-        historyListAdapter.getDatabase(dbHelper);
+        historyListAdapter.setDatabase(getContext());
         listView.setAdapter(historyListAdapter);
 
 //        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

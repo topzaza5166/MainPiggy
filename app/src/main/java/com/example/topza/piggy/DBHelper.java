@@ -47,12 +47,24 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public Cursor getHistoryList() {
+        sqLiteDatabase = this.getWritableDatabase();
+
+        Cursor cursor = sqLiteDatabase.query
+                (HistoryTable.TABLE, null, null, null, null, null, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+        }
+
+        sqLiteDatabase.close();
+
+        return cursor;
+    }
+
     public HistoryTable getHistory(String id) {
         sqLiteDatabase = this.getReadableDatabase();
         HistoryTable history = new HistoryTable();
-
-//        Cursor cursor = sqLiteDatabase.query
-//                (HistoryTable.TABLE, null, null, null, null, null, null);
 
         Cursor cursor = sqLiteDatabase.query(HistoryTable.TABLE,
                 null, HistoryTable.Column.ID + " = " + id, null, null, null, null);
@@ -84,7 +96,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
     }
 
-    public int getCountDatabase(){
+    public int getCountDatabase() {
 
         sqLiteDatabase = this.getReadableDatabase();
 

@@ -2,6 +2,8 @@ package com.example.topza.piggy;
 
 import android.app.Application;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,23 +13,36 @@ import android.widget.BaseAdapter;
  */
 public class HistoryListAdapter extends BaseAdapter {
 
+    Cursor itemList;
     DBHelper dbHelper;
+
     int count = 0;
 
-    public void getDatabase(DBHelper db){
-        dbHelper = db;
+    public void setDatabase(Context context) {
+        dbHelper = new DBHelper(context);
+        itemList = dbHelper.getHistoryList();
     }
-
 
     @Override
     public int getCount() {
-        count = dbHelper.getCountDatabase();
+        count = itemList.getCount();
         return count;
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        HistoryTable history = new HistoryTable();
+        itemList.moveToPosition(position);
+
+        if(itemList != null){
+            history.setId(itemList.getInt(0));
+            history.setHistoryApp(itemList.getString(1));
+            history.setHistoryMoney(itemList.getString(2));
+            history.setHistoryTime(itemList.getString(3));
+            history.setHistoryIO(itemList.getString(4));
+        }
+
+        return history;
     }
 
     @Override
@@ -39,8 +54,7 @@ public class HistoryListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         HistoryTable historyTable = null;
 
-        if (position < count)
-            historyTable = dbHelper.getHistory(Integer.toString(count-position));
+        historyTable = (HistoryTable) getItem(position);
 
         CustomViewGroupTemplate view;
 
@@ -59,7 +73,6 @@ public class HistoryListAdapter extends BaseAdapter {
             view.setCustomListTextMoney(historyTable.getHistoryMoney());
             view.setCustomListTextTime(historyTable.getHistoryTime());
         }
-
 
         return view;
     }

@@ -13,6 +13,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,9 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     ImageView coin1;
     ImageView coin5;
     ImageView coin10;
+    TextView textCurrency;
+    TextView textAnimation;
+    Button clearButton;
 
     double countMoney = 0.00;
     int tokenCountMoney = 5;
@@ -84,8 +88,12 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     private void initInstances(View rootView) {
         // Init 'View' instance(s) with rootView.findViewById here
         textCountMoney = (TextView) rootView.findViewById(R.id.TextCountMoneyFragment);
+        textCurrency = (TextView) rootView.findViewById(R.id.TextCurrency);
+        textAnimation = (TextView) rootView.findViewById(R.id.TextAnimation);
         bottomText = (TextView) rootView.findViewById(R.id.BottomTextFragment);
         coinSlider = (SliderLayout) rootView.findViewById(R.id.SliderFragment);
+        clearButton = (Button) rootView.findViewById(R.id.ClearButton);
+        clearButton.setOnClickListener(ClearCount);
 
         countDownTimer = new CountDownTimer(25000, 5000) {
             @Override
@@ -108,13 +116,22 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         initSlider();
     }
 
+    View.OnClickListener ClearCount = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            countMoney = 0.00;
+            ((HomeActivity) getActivity()).sendBluetoothText(Double.toString(countMoney));
+        }
+    };
+
     private void initSlider() {
 
         HashMap<String, Integer> file_map = new HashMap<String, Integer>();
+        file_map.put("1.00", R.drawable.coin1);
+        file_map.put("100.00", R.drawable.coin1);
         file_map.put("10.00", R.drawable.coin10);
         file_map.put("5.00", R.drawable.coin5);
-        file_map.put("1.00", R.drawable.coin1);
-
+        file_map.put("20.00", R.drawable.coin1);
 
         for (String name : file_map.keySet()) {
             DefaultSliderView defaultSliderView = new DefaultSliderView(getContext());
@@ -135,7 +152,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         coinSlider.addOnPageChangeListener(this);
         coinSlider.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
         coinSlider.stopAutoCycle();
-        coinSlider.setCurrentPosition(1);
+        coinSlider.setCurrentPosition(2);
     }
 
     @Override
@@ -190,7 +207,6 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
     }
 
     @Override
@@ -209,39 +225,64 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
         dbHelper.addHistory(history);
 
-        ((HomeActivity)getActivity()).sendBluetoothText(s);
+        ((HomeActivity) getActivity()).sendBluetoothText(s);
 
-        if (addMoney == "5.00")
+        textAnimation.setText("THB " + addMoney + " to Piggy");
+
+        if (addMoney == "5.00") {
             coinAnimation(coin5);
+        } else coinAnimation(coin1);
 
-        if (addMoney == "1.00")
+        Animation textFadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        textAnimation.startAnimation(textFadeInAnimation);
 
-            coinAnimation(coin1);
-        if (addMoney == "10.00")
-            coinAnimation(coin10);
-
-        Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(getContext(), "" + coinSlider.getCurrentPosition(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
 
-    private void coinAnimation(final ImageView coin){
-        coinSlider.setVisibility(View.INVISIBLE);
+    private void coinAnimation(final ImageView coin) {
         final MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
         Animation coinMoveAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_animation);
         coin_sound.setVolume(80, 80);
-        coinMoveAnimation.setAnimationListener(new Animation.AnimationListener(){
+        coinMoveAnimation.setAnimationListener(new Animation.AnimationListener() {
             public void onAnimationEnd(Animation animation) {
-                coinSlider.setVisibility(View.VISIBLE);
+                setAnimationVisibility("VISIBLE");
+                textAnimation.setVisibility(View.INVISIBLE);
                 coin.setVisibility(View.GONE);
             }
-            public void onAnimationRepeat(Animation animation) {}
+
+            public void onAnimationRepeat(Animation animation) {
+            }
+
             public void onAnimationStart(Animation animation) {
+                setAnimationVisibility("INVISIBLE");
+                textAnimation.setVisibility(View.VISIBLE);
                 coin_sound.start();
             }
         });
         coin.setVisibility(View.VISIBLE);
         coin.startAnimation(coinMoveAnimation);
+    }
+
+    private void setAnimationVisibility(String status) {
+        int setting;
+
+        switch (status) {
+            case "INVISIBLE":
+                setting = View.INVISIBLE;
+                break;
+            case "VISIBLE":
+                setting = View.VISIBLE;
+                break;
+            default:
+                setting = View.INVISIBLE;
+                break;
+        }
+
+        bottomText.setVisibility(setting);
+        coinSlider.setVisibility(setting);
+        textCurrency.setVisibility(setting);
+        textCountMoney.setVisibility(setting);
     }
 
     public double getCountMoney() {

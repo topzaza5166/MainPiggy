@@ -1,6 +1,7 @@
 package com.example.topza.piggy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.CountDownTimer;
@@ -207,7 +208,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
-            Toast.makeText(HomeActivity.this, "Setting Mode", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, "Setting Menu", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,SettingActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
