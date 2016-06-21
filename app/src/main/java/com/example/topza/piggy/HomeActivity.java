@@ -36,7 +36,8 @@ public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
     NavigationView navigation;
     BluetoothSPP bt;
-    SharedPreferences sp;
+    SharedPreferences preferences;
+    SharedPreferences sharedPreferences;
     BalanceFragment balanceFragment;
 
     @Override
@@ -44,9 +45,17 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        sharedPreferences = getSharedPreferences("SETTING",Context.MODE_PRIVATE);
+        Bundle sp = new Bundle();
+        sp.putBoolean("Check1",sharedPreferences.getBoolean("Check1",true));
+        sp.putBoolean("Check5",sharedPreferences.getBoolean("Check5",true));
+        sp.putBoolean("Check10",sharedPreferences.getBoolean("Check10",true));
+        sp.putBoolean("Check20",sharedPreferences.getBoolean("Check20",true));
+        sp.putBoolean("Check100",sharedPreferences.getBoolean("Check100",true));
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentContainer, new BalanceFragment().newInstance(5.0), "BalanceFragment")
+                    .add(R.id.contentContainer, new BalanceFragment().newInstance(sp), "BalanceFragment")
                     .commit();
         }
 
@@ -108,7 +117,7 @@ public class HomeActivity extends AppCompatActivity {
         navigation = (NavigationView) findViewById(R.id.navigation);
         setNavigationItem();
 
-        sp = getPreferences(Context.MODE_PRIVATE);
+        preferences = getPreferences(Context.MODE_PRIVATE);
 
     }
 
@@ -167,7 +176,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        balanceFragment.setCountMoney((double) sp.getFloat("CountMoney", 0));
+        balanceFragment.setCountMoney((double) preferences.getFloat("CountMoney",0));
 
 //      balanceFragment.setBluetooth(bt);
 
@@ -181,8 +190,11 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        bt.disconnect();
+        bt.stopAutoConnect();
+        bt.stopService();
 
-        SharedPreferences.Editor editor = sp.edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
         editor.commit();
     }
@@ -210,9 +222,24 @@ public class HomeActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_settings) {
             Toast.makeText(HomeActivity.this, "Setting Menu", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this,SettingActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,1);
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.contentContainer, BalanceFragment.newInstance(data.getBundleExtra("SaveSetting")), "BalanceFragment")
+                        .commit();
+                Toast.makeText(HomeActivity.this, "Save Setting", Toast.LENGTH_SHORT).show();
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(HomeActivity.this, "CANCELED", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
