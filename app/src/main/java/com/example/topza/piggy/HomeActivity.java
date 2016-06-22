@@ -1,6 +1,7 @@
 package com.example.topza.piggy;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -81,19 +82,11 @@ public class HomeActivity extends AppCompatActivity {
                     bt.send(Double.toString(balanceFragment.getCountMoney()), true);
                     Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
                 }
+                if(state == BluetoothState.STATE_NONE){
+                    Toast.makeText(HomeActivity.this, "Service is Null", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-        bt.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
-            public void onNewConnection(String name, String address) {
-                Log.i("Check", "New Connection - " + name + " - " + address);
-            }
-
-            public void onAutoConnectionStarted() {
-                Log.i("Check", "Auto connection started");
-            }
-        });
-
 
     }
 
@@ -169,15 +162,17 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        bt.stopService();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (!bt.isBluetoothEnabled())
+
+        if(!bt.isBluetoothEnabled()) {
             bt.enable();
-        else {
-            if (!bt.isServiceAvailable()) {
+        } else {
+            if(!bt.isServiceAvailable()) {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
                 bt.autoConnect("Piggy");
@@ -196,9 +191,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        bt.disconnect();
-        bt.stopAutoConnect();
-        bt.stopService();
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
