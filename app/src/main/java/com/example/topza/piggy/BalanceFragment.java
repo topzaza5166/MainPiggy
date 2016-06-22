@@ -245,6 +245,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
 
+
     private void coinAnimation(final ImageView coin) {
         final MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
         Animation coinMoveAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_animation);

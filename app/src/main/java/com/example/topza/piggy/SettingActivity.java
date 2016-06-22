@@ -29,7 +29,7 @@ public class SettingActivity extends AppCompatActivity {
 
         iniInstances();
 
-        check1.setChecked(sp.getBoolean("Check1",true));
+        //check1.setChecked(sp.getBoolean("Check1",true));
         check5.setChecked(sp.getBoolean("Check5",true));
         check10.setChecked(sp.getBoolean("Check10",true));
         check20.setChecked(sp.getBoolean("Check20",true));
@@ -37,7 +37,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void iniInstances(){
-        check1 = (Switch) findViewById(R.id.Check1);
+        //check1 = (Switch) findViewById(R.id.Check1);
         check5 = (Switch) findViewById(R.id.Check5);
         check10 = (Switch) findViewById(R.id.Check10);
         check20 = (Switch) findViewById(R.id.Check20);

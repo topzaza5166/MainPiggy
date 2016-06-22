@@ -74,8 +74,6 @@ public class AccountFragment extends Fragment {
 //               // Toast.makeText(getContext(), "This position is " + position, Toast.LENGTH_SHORT).show();
 //            }
 //        });
-
-
     }
 
     @Override

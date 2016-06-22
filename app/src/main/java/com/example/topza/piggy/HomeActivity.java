@@ -1,18 +1,17 @@
 package com.example.topza.piggy;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.CountDownTimer;
-import android.os.PersistableBundle;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,12 +19,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
@@ -39,19 +39,20 @@ public class HomeActivity extends AppCompatActivity {
     SharedPreferences preferences;
     SharedPreferences sharedPreferences;
     BalanceFragment balanceFragment;
+    ImageView imageAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        sharedPreferences = getSharedPreferences("SETTING",Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("SETTING", Context.MODE_PRIVATE);
         Bundle sp = new Bundle();
-        sp.putBoolean("Check1",sharedPreferences.getBoolean("Check1",true));
-        sp.putBoolean("Check5",sharedPreferences.getBoolean("Check5",true));
-        sp.putBoolean("Check10",sharedPreferences.getBoolean("Check10",true));
-        sp.putBoolean("Check20",sharedPreferences.getBoolean("Check20",true));
-        sp.putBoolean("Check100",sharedPreferences.getBoolean("Check100",true));
+        sp.putBoolean("Check1", sharedPreferences.getBoolean("Check1", true));
+        sp.putBoolean("Check5", sharedPreferences.getBoolean("Check5", true));
+        sp.putBoolean("Check10", sharedPreferences.getBoolean("Check10", true));
+        sp.putBoolean("Check20", sharedPreferences.getBoolean("Check20", true));
+        sp.putBoolean("Check100", sharedPreferences.getBoolean("Check100", true));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -117,6 +118,15 @@ public class HomeActivity extends AppCompatActivity {
         navigation = (NavigationView) findViewById(R.id.navigation);
         setNavigationItem();
 
+        View v = navigation.getHeaderView(0);
+        imageAvatar = (ImageView) v.findViewById(R.id.profile_image);
+        imageAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(HomeActivity.this, "This is your Avatar", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         preferences = getPreferences(Context.MODE_PRIVATE);
 
     }
@@ -159,7 +169,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        bt.stopService();
     }
 
     @Override
@@ -176,10 +185,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        balanceFragment.setCountMoney((double) preferences.getFloat("CountMoney",0));
-
-//      balanceFragment.setBluetooth(bt);
-
+        balanceFragment.setCountMoney((double) preferences.getFloat("CountMoney", 0));
     }
 
     public void sendBluetoothText(String text) {
@@ -221,8 +227,8 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
             Toast.makeText(HomeActivity.this, "Setting Menu", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this,SettingActivity.class);
-            startActivityForResult(intent,1);
+            Intent intent = new Intent(this, SettingActivity.class);
+            startActivityForResult(intent, 1);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -230,16 +236,67 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK){
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.contentContainer, BalanceFragment.newInstance(data.getBundleExtra("SaveSetting")), "BalanceFragment")
                         .commit();
                 Toast.makeText(HomeActivity.this, "Save Setting", Toast.LENGTH_SHORT).show();
-            }
-            else if(resultCode == RESULT_CANCELED){
+            } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(HomeActivity.this, "CANCELED", Toast.LENGTH_SHORT).show();
             }
+
+        }
+
+//        if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
+//
+//            if (data == null) {
+//                //Display an error
+//                Toast.makeText(HomeActivity.this, "Error Please Try Again", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            InputStream inputStream = new InputStream() {
+//                @Override
+//                public int read() throws IOException {
+//                    return 0;
+//                }
+//            };
+//
+//            try {
+//                inputStream = this.getContentResolver().openInputStream(data.getData());
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
+//            Bitmap avatarBitmap = BitmapFactory.decodeStream(inputStream);
+//            imageAvatar.setImageBitmap(avatarBitmap);
+//        }
+    }
+
+//    public void pickImage() {
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
+//    }
+
+    void OpenFileDialog(String file) {
+
+        //Read file in Internal Storage
+        FileInputStream fis;
+        String content = "";
+        try {
+            fis = openFileInput(file);
+            byte[] input = new byte[fis.available()];
+            while (fis.read(input) != -1) {
+            }
+            content += new String(input);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 }
