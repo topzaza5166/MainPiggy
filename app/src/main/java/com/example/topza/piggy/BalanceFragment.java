@@ -70,6 +70,8 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
                 ((HomeActivity) getActivity()).sendBluetoothText(Double.toString(countMoney));
                 break;
             case R.id.ConnectButton:
+//                bt.setupService();
+//                bt.startService(BluetoothState.DEVICE_ANDROID);
                 receiveUserBluetoothDialog((AppCompatActivity) getActivity(), "Bluetooth Connection",
                         "Please Input your Bluetooth connect device name.", "Connect");
                 break;
