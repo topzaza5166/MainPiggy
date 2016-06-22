@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/rectangle11"
     android:orientation="vertical"
-    tools:context="com.example.topza.piggy.HomeActivity">
+    tools:context="com.example.topza.piggy.Balance">
 
     <Button
         android:id="@+id/ClearButton"
@@ -25,6 +25,31 @@
         android:textSize="30dp"
         android:visibility="invisible"
         android:layout_centerVertical="true"
+        />
+
+    <ImageView
+        android:id="@+id/coin1Animation"
+        android:layout_width="@dimen/ImageSlider_Size"
+        android:layout_height="@dimen/ImageSlider_Size"
+        android:src="@drawable/coin1"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/coin5Animation"
+        android:layout_width="@dimen/ImageSlider_Size"
+        android:layout_height="@dimen/ImageSlider_Size"
+        android:src="@drawable/coin5"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/coin10Animation"
+        android:layout_width="@dimen/ImageSlider_Size"
+        android:layout_height="@dimen/ImageSlider_Size"
+        android:src="@drawable/coin10"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
         />
 
     <LinearLayout
@@ -105,30 +130,5 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/coin1Animation"
-        android:layout_width="@dimen/ImageSlider_Size"
-        android:layout_height="@dimen/ImageSlider_Size"
-        android:src="@drawable/coin1"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true"/>
-
-    <ImageView
-        android:id="@+id/coin5Animation"
-        android:layout_width="@dimen/ImageSlider_Size"
-        android:layout_height="@dimen/ImageSlider_Size"
-        android:src="@drawable/coin5"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true"/>
-
-    <ImageView
-        android:id="@+id/coin10Animation"
-        android:layout_width="@dimen/ImageSlider_Size"
-        android:layout_height="@dimen/ImageSlider_Size"
-        android:src="@drawable/coin10"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true"
-        />
 
 </RelativeLayout>
