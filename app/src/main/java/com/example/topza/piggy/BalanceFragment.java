@@ -241,7 +241,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         Animation textFadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
         textAnimation.startAnimation(textFadeInAnimation);
 
-        Toast.makeText(getContext(), "" + coinSlider.getCurrentPosition(), Toast.LENGTH_SHORT).show();
+        ((HomeActivity)getActivity()).setTextCredit(countMoney);
         //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
 

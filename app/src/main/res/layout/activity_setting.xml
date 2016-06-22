@@ -31,15 +31,11 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/Check1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:trackTint="#000"
-            android:thumbTint="#000"
-            android:thumbTintMode="multiply"
-            />
+            android:padding="16dp" />
 
     </LinearLayout>
 
@@ -61,7 +57,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/Check5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,7 +83,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/Check10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -113,7 +109,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/Check20"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -139,19 +135,13 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/Check100"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"/>
 
     </LinearLayout>
-
-    <ImageButton
-        android:layout_width="@dimen/ImageAvatar_Size"
-        android:layout_height="@dimen/ImageAvatar_Size"
-        android:layout_gravity="center"
-        />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -170,13 +160,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CANCEL"
-            android:layout_marginRight="50dp"/>
+            android:layout_marginRight="50dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="#fff"/>
 
         <Button
             android:id="@+id/SaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SAVE" />
+            android:text="SAVE"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="#fff"/>
 
         <View
             android:layout_width="0dp"

@@ -1,12 +1,14 @@
 package com.example.topza.piggy;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -15,13 +17,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +47,8 @@ public class HomeActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     BalanceFragment balanceFragment;
     ImageView imageAvatar;
+    TextView textCredit;
+    final int PICK_PHOTO_FOR_AVATAR = 00110101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,19 +90,11 @@ public class HomeActivity extends AppCompatActivity {
                     bt.send(Double.toString(balanceFragment.getCountMoney()), true);
                     Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
                 }
+                if (state == BluetoothState.STATE_NONE) {
+                    Toast.makeText(HomeActivity.this, "Service is Null", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-
-        bt.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
-            public void onNewConnection(String name, String address) {
-                Log.i("Check", "New Connection - " + name + " - " + address);
-            }
-
-            public void onAutoConnectionStarted() {
-                Log.i("Check", "Auto connection started");
-            }
-        });
-
 
     }
 
@@ -123,9 +124,14 @@ public class HomeActivity extends AppCompatActivity {
         imageAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(HomeActivity.this, "This is your Avatar", Toast.LENGTH_SHORT).show();
+                pickImage();
+                Toast.makeText(HomeActivity.this, "Choose your avatar", Toast.LENGTH_SHORT).show();
             }
         });
+        if(readImageData() != null){
+            imageAvatar.setImageBitmap(readImageData());
+        }
+        textCredit = (TextView) v.findViewById(R.id.TextCredit);
 
         preferences = getPreferences(Context.MODE_PRIVATE);
 
@@ -169,14 +175,16 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        bt.stopService();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (!bt.isBluetoothEnabled())
+
+        if (!bt.isBluetoothEnabled()) {
             bt.enable();
-        else {
+        } else {
             if (!bt.isServiceAvailable()) {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
@@ -184,8 +192,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
+        Float count = preferences.getFloat("CountMoney", 0);
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        balanceFragment.setCountMoney((double) preferences.getFloat("CountMoney", 0));
+        balanceFragment.setCountMoney((double) count);
+
+        textCredit.setText("THB " + count);
     }
 
     public void sendBluetoothText(String text) {
@@ -196,9 +207,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        bt.disconnect();
-        bt.stopAutoConnect();
-        bt.stopService();
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
@@ -249,54 +257,66 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-//        if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
-//
-//            if (data == null) {
-//                //Display an error
-//                Toast.makeText(HomeActivity.this, "Error Please Try Again", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            InputStream inputStream = new InputStream() {
-//                @Override
-//                public int read() throws IOException {
-//                    return 0;
-//                }
-//            };
-//
-//            try {
-//                inputStream = this.getContentResolver().openInputStream(data.getData());
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
-//            Bitmap avatarBitmap = BitmapFactory.decodeStream(inputStream);
-//            imageAvatar.setImageBitmap(avatarBitmap);
-//        }
-    }
-
-//    public void pickImage() {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("image/*");
-//        startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
-//    }
-
-    void OpenFileDialog(String file) {
-
-        //Read file in Internal Storage
-        FileInputStream fis;
-        String content = "";
-        try {
-            fis = openFileInput(file);
-            byte[] input = new byte[fis.available()];
-            while (fis.read(input) != -1) {
+        if (requestCode == PICK_PHOTO_FOR_AVATAR && resultCode == Activity.RESULT_OK) {
+            if (data == null) {
+                //Display an error
+                Toast.makeText(HomeActivity.this, "Error Please Try Again", Toast.LENGTH_SHORT).show();
+                return;
             }
-            content += new String(input);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            InputStream inputStream = new InputStream() {
+                @Override
+                public int read() throws IOException {
+                    return 0;
+                }
+            };
+
+            try {
+                inputStream = this.getContentResolver().openInputStream(data.getData());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
+            Bitmap avatarBitmap = BitmapFactory.decodeStream(inputStream);
+            imageAvatar.setImageBitmap(avatarBitmap);
+            saveImageData(avatarBitmap);
         }
     }
 
+    public void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
+    }
+
+    public void saveImageData(Bitmap realImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        realImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+
+        String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+
+        SharedPreferences share = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = share.edit();
+        edit.putString("image_data", encodedImage);
+        edit.commit();
+    }
+
+    public Bitmap readImageData() {
+        SharedPreferences share = PreferenceManager.getDefaultSharedPreferences(this);
+        String previouslyEncodedImage = share.getString("image_data", "");
+
+        Bitmap bitmap = null;
+
+        if (!previouslyEncodedImage.equalsIgnoreCase("")) {
+            byte[] b = Base64.decode(previouslyEncodedImage, Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+        }
+
+        return bitmap;
+    }
+
+    public void setTextCredit(Double count){
+        textCredit.setText("THB " + count);
+    }
 }
