@@ -1,30 +1,24 @@
 package com.example.topza.piggy;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.CountDownTimer;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -171,7 +165,8 @@ public class HomeActivity extends AppCompatActivity {
             if (!bt.isServiceAvailable()) {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
-                bt.autoConnect("Piggy");
+                receiveUserBluetoothDialog(this, "Bluetooth Connection",
+                        "What your Bluetooth that you want to connect?", "Connect");
             }
         }
 
@@ -180,6 +175,21 @@ public class HomeActivity extends AppCompatActivity {
 
 //      balanceFragment.setBluetooth(bt);
 
+    }
+
+    private AlertDialog receiveUserBluetoothDialog(final AppCompatActivity act, CharSequence title,
+                                     CharSequence message, CharSequence buttonYes){
+        AlertDialog.Builder downloadDialog = new AlertDialog.Builder(act);
+        final EditText bluetooth_name = new EditText(this);
+        bluetooth_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        downloadDialog.setView(bluetooth_name);
+        downloadDialog.setTitle(title).setMessage(message).setPositiveButton(buttonYes, new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                bt.autoConnect(bluetooth_name.getText().toString());
+            }
+        });
+        return downloadDialog.show();
     }
 
     public void sendBluetoothText(String text) {
