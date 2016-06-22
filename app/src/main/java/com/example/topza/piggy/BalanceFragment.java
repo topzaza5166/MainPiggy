@@ -1,12 +1,21 @@
 package com.example.topza.piggy;
 
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,46 +26,56 @@ import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 
 import java.security.PublicKey;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
 
 /**
  * Created by nuuneoi on 11/16/2014.
  */
-public class BalanceFragment extends Fragment implements BaseSliderView.OnSliderClickListener,ViewPagerEx.OnPageChangeListener {
+public class BalanceFragment extends Fragment implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
 
+    HistoryTable history;
+    DBHelper dbHelper;
     SliderLayout coinSlider;
     TextView textCountMoney;
     TextView bottomText;
     CountDownTimer countDownTimer;
-    BluetoothSPP bt;
-    double countMoney = 5.00;
+    ImageView coin1;
+    ImageView coin5;
+    ImageView coin10;
+    TextView textCurrency;
+    TextView textAnimation;
+    Button clearButton;
+
+    double countMoney = 0.00;
     int tokenCountMoney = 5;
     boolean startTicker = false;
+
+    View.OnClickListener ClearCount = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            countMoney = 0.00;
+            ((HomeActivity) getActivity()).sendBluetoothText(Double.toString(countMoney));
+        }
+    };
 
     public BalanceFragment() {
         super();
     }
 
-    public static BalanceFragment newInstance(double money) {
+    public static BalanceFragment newInstance(Bundle sliderSet) {
         BalanceFragment fragment = new BalanceFragment();
-        Bundle args = new Bundle();
-        args.putDouble("countMoney",money);
-        fragment.setArguments(args);
+        fragment.setArguments(sliderSet);
         return fragment;
-    }
-
-    public void setBluetooth(BluetoothSPP setBluetooth){
-        this.bt = setBluetooth;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Read from Arguments
-        if(savedInstanceState != null)
-            countMoney = savedInstanceState.getDouble("countMoney");
+        //Read from Arguments from function getArguments().
     }
 
     @Override
@@ -70,13 +89,17 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     private void initInstances(View rootView) {
         // Init 'View' instance(s) with rootView.findViewById here
         textCountMoney = (TextView) rootView.findViewById(R.id.TextCountMoneyFragment);
-        bottomText = (TextView) rootView.findViewById(R.id.BottomTextFragment) ;
+        textCurrency = (TextView) rootView.findViewById(R.id.TextCurrency);
+        textAnimation = (TextView) rootView.findViewById(R.id.TextAnimation);
+        bottomText = (TextView) rootView.findViewById(R.id.BottomTextFragment);
         coinSlider = (SliderLayout) rootView.findViewById(R.id.SliderFragment);
+        clearButton = (Button) rootView.findViewById(R.id.ClearButton);
+        clearButton.setOnClickListener(ClearCount);
 
-        countDownTimer = new CountDownTimer(25000,5000) {
+        countDownTimer = new CountDownTimer(25000, 5000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if(tokenCountMoney < 5) tokenCountMoney++;
+                if (tokenCountMoney < 5) tokenCountMoney++;
             }
 
             @Override
@@ -85,18 +108,30 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
             }
         };
 
+        dbHelper = new DBHelper(getContext());
+
+        coin1 = (ImageView) rootView.findViewById(R.id.coin1Animation);
+        coin5 = (ImageView) rootView.findViewById(R.id.coin5Animation);
+        coin10 = (ImageView) rootView.findViewById(R.id.coin10Animation);
+
         initSlider();
     }
 
     private void initSlider() {
 
-        HashMap<String,Integer> file_map = new HashMap<String,Integer>();
-        file_map.put("10.00",R.drawable.coin10);
-        file_map.put("5.00",R.drawable.coin5);
-        file_map.put("1.00",R.drawable.coin1);
+        HashMap<String, Integer> file_map = new HashMap<String, Integer>();
+        if (getArguments().getBoolean("Check1"))
+            file_map.put("1.00", R.drawable.coin1);
+        if (getArguments().getBoolean("Check100"))
+            file_map.put("100.00", R.drawable.coin1);
+        if (getArguments().getBoolean("Check10"))
+            file_map.put("10.00", R.drawable.coin10);
+        if (getArguments().getBoolean("Check5"))
+            file_map.put("5.00", R.drawable.coin5);
+        if (getArguments().getBoolean("Check20"))
+            file_map.put("20.00", R.drawable.coin1);
 
-
-        for(String name : file_map.keySet()){
+        for (String name : file_map.keySet()) {
             DefaultSliderView defaultSliderView = new DefaultSliderView(getContext());
             defaultSliderView
                     .image(file_map.get(name))
@@ -106,7 +141,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
             //add your extra information
             defaultSliderView.bundle(new Bundle());
             defaultSliderView.getBundle()
-                    .putString("extra",name);
+                    .putString("extra", name);
 
             coinSlider.addSlider(defaultSliderView);
         }
@@ -115,7 +150,14 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         coinSlider.addOnPageChangeListener(this);
         coinSlider.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
         coinSlider.stopAutoCycle();
-        coinSlider.setCurrentPosition(1);
+
+        BaseSliderView current = coinSlider.getCurrentSlider();
+        String i = current.getBundle().getString("extra");
+        textCountMoney.setText(i);
+
+        String s = "Click to send THB " + i + " to Piggy";
+        bottomText.setText(s);
+
     }
 
     @Override
@@ -135,6 +177,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save Instance State here
+        outState.putDouble("CountMoney", countMoney);
     }
 
     /*
@@ -145,6 +188,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             // Restore Instance State here
+            countMoney = savedInstanceState.getDouble("CountMoney");
         }
     }
 
@@ -156,7 +200,11 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     @Override
     public void onPageSelected(int position) {
         BaseSliderView current = coinSlider.getCurrentSlider();
-        String s = "Click to send THB " + current.getBundle().getString("extra") + " to Piggy";
+
+        String i = current.getBundle().getString("extra");
+        textCountMoney.setText(i);
+
+        String s = "Click to send THB " + i + " to Piggy";
         bottomText.setText(s);
 
         //Toast.makeText(getContext(), position + "", Toast.LENGTH_SHORT).show();
@@ -164,23 +212,91 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
     }
 
     @Override
     public void onSliderClick(BaseSliderView slider) {
-        if(tokenCountMoney > 0 && startTicker == false ){
-            countMoney = countMoney + Double.parseDouble(slider.getBundle().getString("extra"));
-            String s = Double.toString(countMoney);
-            textCountMoney.setText(s);
-            bt.send(s,true);
-            //tokenCountMoney--;
-        }else{
-            Toast.makeText(getContext(), "You can't add Money", Toast.LENGTH_SHORT).show();
-            if(startTicker == false){
-                countDownTimer.start();
-                startTicker = true;
-            }
-        }
+        String addMoney = slider.getBundle().getString("extra");
+        countMoney = countMoney + Double.parseDouble(addMoney);
+
+        String s = Double.toString(countMoney);
+        Calendar rightNow = Calendar.getInstance();
+
+        history = new HistoryTable();
+        history.setHistoryApp("Piggy");
+        history.setHistoryMoney(addMoney);
+        history.setHistoryTime(rightNow.get(Calendar.HOUR_OF_DAY) + ":" + rightNow.get(Calendar.MINUTE));
+        history.setHistoryIO("Output");
+
+        dbHelper.addHistory(history);
+
+        ((HomeActivity) getActivity()).sendBluetoothText(s);
+
+        textAnimation.setText("THB " + addMoney + " to Piggy");
+
+        if (addMoney == "5.00") {
+            coinAnimation(coin5);
+        } else coinAnimation(coin1);
+
+        Animation textFadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        textAnimation.startAnimation(textFadeInAnimation);
+
+        Toast.makeText(getContext(), "" + coinSlider.getCurrentPosition(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
+
+    private void coinAnimation(final ImageView coin) {
+        final MediaPlayer coin_sound = MediaPlayer.create(getContext(), R.raw.coin_drop_sound);
+        Animation coinMoveAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_animation);
+        coin_sound.setVolume(80, 80);
+        coinMoveAnimation.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationEnd(Animation animation) {
+                setAnimationVisibility("VISIBLE");
+                textAnimation.setVisibility(View.INVISIBLE);
+                coin.setVisibility(View.GONE);
+            }
+
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            public void onAnimationStart(Animation animation) {
+                setAnimationVisibility("INVISIBLE");
+                textAnimation.setVisibility(View.VISIBLE);
+                coin_sound.start();
+            }
+        });
+        coin.setVisibility(View.VISIBLE);
+        coin.startAnimation(coinMoveAnimation);
+    }
+
+    private void setAnimationVisibility(String status) {
+        int setting;
+
+        switch (status) {
+            case "INVISIBLE":
+                setting = View.INVISIBLE;
+                break;
+            case "VISIBLE":
+                setting = View.VISIBLE;
+                break;
+            default:
+                setting = View.INVISIBLE;
+                break;
+        }
+
+        bottomText.setVisibility(setting);
+        coinSlider.setVisibility(setting);
+        textCurrency.setVisibility(setting);
+        textCountMoney.setVisibility(setting);
+    }
+
+    public double getCountMoney() {
+        return countMoney;
+    }
+
+    public void setCountMoney(double cm) {
+        countMoney = cm;
+    }
+
 }
+

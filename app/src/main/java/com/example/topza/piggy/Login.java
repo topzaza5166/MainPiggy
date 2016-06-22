@@ -39,15 +39,19 @@ public class Login extends AppCompatActivity {
                 pin = editPin.getText().toString();
                 activecode = editActiveCode.getText().toString();
 
-                if (!username.equals("topza5166") || !pin.equals("1234"))
-                    Toast.makeText(Login.this, "Error Username or Pin is Incorrect", Toast.LENGTH_SHORT).show();
-                else if (!activecode.equals("") && !activecode.equals("top"))
-                    Toast.makeText(Login.this, "Error This Code is Invariable", Toast.LENGTH_SHORT).show();
-                else {
-                    Intent intent = new Intent(Login.this, Password.class);
-                    startActivity(intent);
-                    finish();
-                }
+                Intent intent = new Intent(Login.this, Password.class);
+                startActivity(intent);
+                finish();
+
+//                if (!username.equals("topza5166") || !pin.equals("1234"))
+//                    Toast.makeText(Login.this, "Error Username or Pin is Incorrect", Toast.LENGTH_SHORT).show();
+//                else if (!activecode.equals("") && !activecode.equals("top"))
+//                    Toast.makeText(Login.this, "Error This Code is Invariable", Toast.LENGTH_SHORT).show();
+//                else {
+//                    Intent intent = new Intent(Login.this, Password.class);
+//                    startActivity(intent);
+//                    finish();
+//                }
 
             }
         });

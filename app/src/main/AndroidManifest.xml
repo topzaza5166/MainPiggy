@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -29,12 +30,13 @@
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".HomeActivity"
-            android:screenOrientation="portrait" >
-    </activity>
-    <meta-data
+            android:screenOrientation="portrait"></activity>
+
+        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="5e64558e96f08905ccba1eb5a7c7497d4ef0e739" />
+
+        <activity android:name=".SettingActivity"></activity>
     </application>
 
-        <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

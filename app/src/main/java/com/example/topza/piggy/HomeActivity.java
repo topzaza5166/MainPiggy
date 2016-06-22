@@ -1,13 +1,18 @@
 package com.example.topza.piggy;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.CountDownTimer;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +20,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -28,15 +36,26 @@ public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
     NavigationView navigation;
     BluetoothSPP bt;
+    SharedPreferences preferences;
+    SharedPreferences sharedPreferences;
+    BalanceFragment balanceFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        sharedPreferences = getSharedPreferences("SETTING",Context.MODE_PRIVATE);
+        Bundle sp = new Bundle();
+        sp.putBoolean("Check1",sharedPreferences.getBoolean("Check1",true));
+        sp.putBoolean("Check5",sharedPreferences.getBoolean("Check5",true));
+        sp.putBoolean("Check10",sharedPreferences.getBoolean("Check10",true));
+        sp.putBoolean("Check20",sharedPreferences.getBoolean("Check20",true));
+        sp.putBoolean("Check100",sharedPreferences.getBoolean("Check100",true));
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentContainer, new BalanceFragment().newInstance(5.0), "BalanceFragment")
+                    .add(R.id.contentContainer, new BalanceFragment().newInstance(sp), "BalanceFragment")
                     .commit();
         }
 
@@ -54,6 +73,16 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         }
 
+        bt.setBluetoothStateListener(new BluetoothSPP.BluetoothStateListener() {
+            @Override
+            public void onServiceStateChanged(int state) {
+                if (state == BluetoothState.STATE_CONNECTED) {
+                    bt.send(Double.toString(balanceFragment.getCountMoney()), true);
+                    Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         bt.setAutoConnectionListener(new BluetoothSPP.AutoConnectionListener() {
             public void onNewConnection(String name, String address) {
                 Log.i("Check", "New Connection - " + name + " - " + address);
@@ -63,6 +92,8 @@ public class HomeActivity extends AppCompatActivity {
                 Log.i("Check", "Auto connection started");
             }
         });
+
+
     }
 
     private void initInstances() {
@@ -85,6 +116,9 @@ public class HomeActivity extends AppCompatActivity {
 
         navigation = (NavigationView) findViewById(R.id.navigation);
         setNavigationItem();
+
+        preferences = getPreferences(Context.MODE_PRIVATE);
+
     }
 
     private void setNavigationItem() {
@@ -141,8 +175,28 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-        BalanceFragment fragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
-        fragment.setBluetooth(bt);
+        balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
+        balanceFragment.setCountMoney((double) preferences.getFloat("CountMoney",0));
+
+//      balanceFragment.setBluetooth(bt);
+
+    }
+
+    public void sendBluetoothText(String text) {
+        if (bt.getServiceState() == BluetoothState.STATE_CONNECTED)
+            bt.send(text, true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bt.disconnect();
+        bt.stopAutoConnect();
+        bt.stopService();
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
+        editor.commit();
     }
 
     @Override
@@ -166,8 +220,26 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_settings) {
-            Toast.makeText(HomeActivity.this, "Setting Mode", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, "Setting Menu", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,SettingActivity.class);
+            startActivityForResult(intent,1);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.contentContainer, BalanceFragment.newInstance(data.getBundleExtra("SaveSetting")), "BalanceFragment")
+                        .commit();
+                Toast.makeText(HomeActivity.this, "Save Setting", Toast.LENGTH_SHORT).show();
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(HomeActivity.this, "CANCELED", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
