@@ -5,17 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
 
 public class SettingActivity extends AppCompatActivity {
-    Switch check1;
-    Switch check5;
-    Switch check10;
-    Switch check20;
-    Switch check100;
+    SwitchCompat check1;
+    SwitchCompat check5;
+    SwitchCompat check10;
+    SwitchCompat check20;
+    SwitchCompat check100;
 
     Button cancel;
     Button save;
@@ -37,11 +38,11 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void iniInstances(){
-        check1 = (Switch) findViewById(R.id.Check1);
-        check5 = (Switch) findViewById(R.id.Check5);
-        check10 = (Switch) findViewById(R.id.Check10);
-        check20 = (Switch) findViewById(R.id.Check20);
-        check100 = (Switch) findViewById(R.id.Check100);
+        check1 = (SwitchCompat) findViewById(R.id.Check1);
+        check5 = (SwitchCompat) findViewById(R.id.Check5);
+        check10 = (SwitchCompat) findViewById(R.id.Check10);
+        check20 = (SwitchCompat) findViewById(R.id.Check20);
+        check100 = (SwitchCompat) findViewById(R.id.Check100);
 
         cancel = (Button) findViewById(R.id.CancelButton);
         save = (Button) findViewById(R.id.SaveButton);
