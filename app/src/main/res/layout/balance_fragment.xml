@@ -33,8 +33,7 @@
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin1"
         android:visibility="invisible"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:id="@+id/coin5Animation"
@@ -42,8 +41,7 @@
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin5"
         android:visibility="invisible"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerHorizontal="true"/>
 
     <ImageView
         android:id="@+id/coin10Animation"
@@ -52,7 +50,7 @@
         android:src="@drawable/coin10"
         android:visibility="invisible"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
