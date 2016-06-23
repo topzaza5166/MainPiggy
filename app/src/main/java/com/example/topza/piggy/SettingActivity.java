@@ -3,9 +3,13 @@ package com.example.topza.piggy;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
@@ -23,6 +27,10 @@ public class SettingActivity extends AppCompatActivity {
 
     SharedPreferences sp;
 
+    Toolbar toolbar;
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle actionBarDrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +46,13 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void iniInstances(){
+        toolbar = (Toolbar) findViewById(R.id.settingToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Setting");
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         check1 = (SwitchCompat) findViewById(R.id.Check1);
         check5 = (SwitchCompat) findViewById(R.id.Check5);
         check10 = (SwitchCompat) findViewById(R.id.Check10);
@@ -52,28 +67,6 @@ public class SettingActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean check = check1.isChecked()|| check5.isChecked()|| check10.isChecked()|| check20.isChecked()|| check100.isChecked();
-                if(check) {
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putBoolean("Check1",check1.isChecked());
-                    editor.putBoolean("Check5",check5.isChecked());
-                    editor.putBoolean("Check10",check10.isChecked());
-                    editor.putBoolean("Check20",check20.isChecked());
-                    editor.putBoolean("Check100",check100.isChecked());
-                    editor.commit();
-
-                    Bundle saveSetting = new Bundle();
-                    saveSetting.putBoolean("Check1",check1.isChecked());
-                    saveSetting.putBoolean("Check5",check5.isChecked());
-                    saveSetting.putBoolean("Check10",check10.isChecked());
-                    saveSetting.putBoolean("Check20",check20.isChecked());
-                    saveSetting.putBoolean("Check100",check100.isChecked());
-
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("SaveSetting",saveSetting);
-                    setResult(RESULT_OK,returnIntent);
-                    finish();
-                } else Toast.makeText(SettingActivity.this, "Please set one or more Coin", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -86,5 +79,39 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void saveSetting() {
+        Boolean check = check1.isChecked()|| check5.isChecked()|| check10.isChecked()|| check20.isChecked()|| check100.isChecked();
+        if(check) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("Check1",check1.isChecked());
+            editor.putBoolean("Check5",check5.isChecked());
+            editor.putBoolean("Check10",check10.isChecked());
+            editor.putBoolean("Check20",check20.isChecked());
+            editor.putBoolean("Check100",check100.isChecked());
+            editor.commit();
+
+            Bundle saveSetting = new Bundle();
+            saveSetting.putBoolean("Check1",check1.isChecked());
+            saveSetting.putBoolean("Check5",check5.isChecked());
+            saveSetting.putBoolean("Check10",check10.isChecked());
+            saveSetting.putBoolean("Check20",check20.isChecked());
+            saveSetting.putBoolean("Check100",check100.isChecked());
+
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("SaveSetting",saveSetting);
+            setResult(RESULT_OK,returnIntent);
+            finish();
+        } else Toast.makeText(SettingActivity.this, "Please set one or more Coin", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(android.R.id.home == item.getItemId()){
+            saveSetting();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
