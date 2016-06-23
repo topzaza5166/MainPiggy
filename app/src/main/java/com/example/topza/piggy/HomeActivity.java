@@ -2,6 +2,7 @@ package com.example.topza.piggy;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,7 @@ import java.io.InputStream;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
+import app.akexorcist.bluetotohspp.library.DeviceList;
 
 public class HomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
@@ -48,7 +50,8 @@ public class HomeActivity extends AppCompatActivity {
     BalanceFragment balanceFragment;
     ImageView imageAvatar;
     TextView textCredit;
-    final int PICK_PHOTO_FOR_AVATAR = 00110101;
+    private static final int PICK_PHOTO_FOR_AVATAR = 0001;
+    private static final int Setting_Activity = 0010;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +131,7 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, "Choose your avatar", Toast.LENGTH_SHORT).show();
             }
         });
-        if(readImageData() != null){
+        if (readImageData() != null) {
             imageAvatar.setImageBitmap(readImageData());
         }
         textCredit = (TextView) v.findViewById(R.id.TextCredit);
@@ -183,13 +186,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onStart();
 
         if (!bt.isBluetoothEnabled()) {
-            bt.enable();
+            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(intent, BluetoothState.REQUEST_ENABLE_BT);
         } else {
-            if (!bt.isServiceAvailable()) {
-                bt.setupService();
-                bt.startService(BluetoothState.DEVICE_ANDROID);
-                bt.autoConnect("Piggy");
-            }
+            bt.setupService();
+            bt.startService(BluetoothState.DEVICE_ANDROID);
         }
 
         Float count = preferences.getFloat("CountMoney", 0);
@@ -197,6 +198,16 @@ public class HomeActivity extends AppCompatActivity {
         balanceFragment.setCountMoney((double) count);
 
         textCredit.setText("THB " + count);
+    }
+
+    private void setup() {
+        Intent intent = new Intent(getApplicationContext(), DeviceList.class);
+        intent.putExtra("bluetooth_devices", "Bluetooth devices");
+        intent.putExtra("no_devices_found", "No device");
+        intent.putExtra("scanning", "กำลังทำการค้นหา");
+        intent.putExtra("scan_for_devices", "Search");
+        intent.putExtra("select_device", "Select");
+        startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
     }
 
     public void sendBluetoothText(String text) {
@@ -236,7 +247,7 @@ public class HomeActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_settings) {
             Toast.makeText(HomeActivity.this, "Setting Menu", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, SettingActivity.class);
-            startActivityForResult(intent, 1);
+            startActivityForResult(intent, Setting_Activity);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -245,7 +256,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
+        if (requestCode == Setting_Activity) {
             if (resultCode == RESULT_OK) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.contentContainer, BalanceFragment.newInstance(data.getBundleExtra("SaveSetting")), "BalanceFragment")
@@ -281,6 +292,21 @@ public class HomeActivity extends AppCompatActivity {
             imageAvatar.setImageBitmap(avatarBitmap);
             saveImageData(avatarBitmap);
         }
+
+        if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if(resultCode == Activity.RESULT_OK)
+                bt.connect(data);
+        } else if(requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if(resultCode == Activity.RESULT_OK) {
+                bt.setupService();
+                bt.startService(BluetoothState.DEVICE_ANDROID);
+            } else {
+                Toast.makeText(getApplicationContext(), "Bluetooth was not enabled."
+                        , Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+
     }
 
     public void pickImage() {
@@ -316,7 +342,7 @@ public class HomeActivity extends AppCompatActivity {
         return bitmap;
     }
 
-    public void setTextCredit(Double count){
+    public void setTextCredit(Double count) {
         textCredit.setText("THB " + count);
     }
 }
