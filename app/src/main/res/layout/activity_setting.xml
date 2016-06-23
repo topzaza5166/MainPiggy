@@ -146,42 +146,18 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:visibility="gone"
+
+    <Button
+        android:id="@+id/SaveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        >
+        android:text="SAVE"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="#fff"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/CancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CANCEL"
-            android:layout_marginRight="50dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="#fff"/>
-
-        <Button
-            android:id="@+id/SaveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SAVE"
-            android:backgroundTint="@color/colorPrimary"
-            android:textColor="#fff"/>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
 
 
 </LinearLayout>

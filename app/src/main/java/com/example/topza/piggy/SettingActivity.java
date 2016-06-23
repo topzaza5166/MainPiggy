@@ -23,14 +23,11 @@ public class SettingActivity extends AppCompatActivity {
     SwitchCompat check20;
     SwitchCompat check100;
 
-    Button cancel;
     Button save;
 
     SharedPreferences sp;
 
     Toolbar toolbar;
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,25 +57,15 @@ public class SettingActivity extends AppCompatActivity {
         check20 = (SwitchCompat) findViewById(R.id.Check20);
         check100 = (SwitchCompat) findViewById(R.id.Check100);
 
-        cancel = (Button) findViewById(R.id.CancelButton);
         save = (Button) findViewById(R.id.SaveButton);
-
-        sp = getSharedPreferences("SETTING",Context.MODE_PRIVATE);
-
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveSetting();
             }
         });
 
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent returnIntent = new Intent();
-                setResult(RESULT_CANCELED,returnIntent);
-                finish();
-            }
-        });
+        sp = getSharedPreferences("SETTING",Context.MODE_PRIVATE);
 
     }
 
@@ -110,7 +97,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(android.R.id.home == item.getItemId()){
-            saveSetting();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
