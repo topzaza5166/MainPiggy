@@ -166,7 +166,7 @@ public class HomeActivity extends AppCompatActivity {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
                 receiveUserBluetoothDialog(this, "Bluetooth Connection",
-                        "What your Bluetooth that you want to connect?", "Connect");
+                        "Please Input Bluetooth connected name.", "Connect");
             }
         }
 
