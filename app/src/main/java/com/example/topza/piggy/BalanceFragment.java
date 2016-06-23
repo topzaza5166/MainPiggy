@@ -40,6 +40,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     TextView textCurrency;
     TextView textAnimation;
     Button clearButton;
+    ImageView iconArrowUp;
 
     double countMoney = 0.00;
     int tokenCountMoney = 5;
@@ -105,6 +106,8 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         coin1 = (ImageView) rootView.findViewById(R.id.coin1Animation);
         coin5 = (ImageView) rootView.findViewById(R.id.coin5Animation);
         coin10 = (ImageView) rootView.findViewById(R.id.coin10Animation);
+
+        iconArrowUp = (ImageView) rootView.findViewById(R.id.ic_arrow_up);
 
         initSlider();
     }
@@ -225,6 +228,8 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         ((HomeActivity) getActivity()).sendBluetoothText(s);
 
         textAnimation.setText("THB " + addMoney + " to Piggy");
+        Animation textFadeAnimation = AnimationUtils.loadAnimation(getContext(),R.anim.fade_in);
+        textAnimation.startAnimation(textFadeAnimation);
 
         windowWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
         windowHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
@@ -262,6 +267,8 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 //            });
             coinAnimation(coin5);
         } else coinAnimation(coin1);
+
+        ((HomeActivity)getActivity()).setTextCredit(countMoney);
 
         //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
@@ -309,6 +316,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         coinSlider.setVisibility(setting);
         textCurrency.setVisibility(setting);
         textCountMoney.setVisibility(setting);
+        iconArrowUp.setVisibility(setting);
     }
 
     public double getCountMoney() {

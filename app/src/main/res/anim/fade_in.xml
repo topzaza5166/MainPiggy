@@ -3,4 +3,4 @@
     android:interpolator = "@android:anim/accelerate_interpolator"
     android:fromAlpha="0"
     android:toAlpha="1"
-    android:duration = "800" />
+    android:duration = "500" />
