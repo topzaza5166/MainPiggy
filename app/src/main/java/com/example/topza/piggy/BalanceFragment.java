@@ -51,9 +51,9 @@ public class BalanceFragment extends Fragment {
     double countMoney = 0.00;
     int tokenCountMoney = 5;
     boolean startTicker = false;
-    int coinSelected[] = {0, 0, 0};
+    int[] coinSelected = new int[5];
     GestureDetector gestureDetector;
-    String coinTextSelected[] = {"", "", ""};
+    String[] coinTextSelected = new String[5];
 
     View.OnClickListener ClearCount = new View.OnClickListener() {
         @Override
@@ -116,13 +116,7 @@ public class BalanceFragment extends Fragment {
 
         iconArrowUp = (ImageView) rootView.findViewById(R.id.ic_arrow_up);
 
-        coinSelected[0] = R.drawable.coin1;
-        coinSelected[1] = R.drawable.coin5;
-        coinSelected[2] = R.drawable.coin10;
-
-        coinTextSelected[0] = "1.0";
-        coinTextSelected[1] = "5.0";
-        coinTextSelected[2] = "10.0";
+        coinGenerator();
 
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
             @Override
@@ -162,36 +156,7 @@ public class BalanceFragment extends Fragment {
         });
 
         coinViewPager = (ViewPager) rootView.findViewById(R.id.CoinViewPager);
-        coinViewPager.setAdapter(new PagerAdapter() {
-            @Override
-            public int getCount() {
-                return 3;
-            }
-
-            @Override
-            public boolean isViewFromObject(View view, Object object) {
-                return view == object;
-            }
-
-            @Override
-            public Object instantiateItem(ViewGroup container, int position) {
-                ImageView coin = new ImageView(container.getContext());
-                coin.setImageResource(coinSelected[position]);
-                coin.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return gestureDetector.onTouchEvent(event);
-                    }
-                });
-                container.addView(coin);
-                return coin;
-            }
-
-            @Override
-            public void destroyItem(ViewGroup container, int position, Object object) {
-                container.removeView((View) object);
-            }
-        });
+        coinViewPager.setAdapter(coinAdapter);
 
         coinViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -215,6 +180,67 @@ public class BalanceFragment extends Fragment {
 
             }
         });
+
+    }
+
+    PagerAdapter coinAdapter = new PagerAdapter() {
+        @Override
+        public int getCount() {
+            return getArguments().getInt("CheckCount");
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            ImageView coin = new ImageView(container.getContext());
+            coin.setImageResource(coinSelected[position]);
+            coin.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return gestureDetector.onTouchEvent(event);
+                }
+            });
+            container.addView(coin);
+            return coin;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+    };
+
+    private void coinGenerator() {
+        int token = 0;
+
+        if (getArguments().getBoolean("Check1")) {
+            coinSelected[token] = R.drawable.coin1;
+            coinTextSelected[token] = "1.0";
+            token++;
+        }
+        if (getArguments().getBoolean("Check5")) {
+            coinSelected[token] = R.drawable.coin5;
+            coinTextSelected[token] = "5.0";
+            token++;
+        }
+        if (getArguments().getBoolean("Check10")) {
+            coinSelected[token] = R.drawable.coin10;
+            coinTextSelected[token] = "10.0";
+            token++;
+        }
+        if (getArguments().getBoolean("Check20")) {
+            coinSelected[token] = R.drawable.coin1;
+            coinTextSelected[token] = "20.0";
+            token++;
+        }
+        if (getArguments().getBoolean("Check100")) {
+            coinSelected[token] = R.drawable.coin1;
+            coinTextSelected[token] = "100.0";
+        }
 
     }
 
@@ -333,5 +359,15 @@ public class BalanceFragment extends Fragment {
         countMoney = cm;
     }
 
+    @Override
+    public void onResume() {
+        String i = coinTextSelected[0];
+        textCountMoney.setText(i);
+
+        String s = "Slide up to send THB " + i + " to Piggy";
+        bottomText.setText(s);
+
+        super.onResume();
+    }
 }
 

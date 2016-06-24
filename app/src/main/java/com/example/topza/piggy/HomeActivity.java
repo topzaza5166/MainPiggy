@@ -50,6 +50,7 @@ public class HomeActivity extends AppCompatActivity {
     BalanceFragment balanceFragment;
     ImageView imageAvatar;
     TextView textCredit;
+
     private static final int PICK_PHOTO_FOR_AVATAR = 0001;
     private static final int Setting_Activity = 0010;
 
@@ -65,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
         sp.putBoolean("Check10", sharedPreferences.getBoolean("Check10", true));
         sp.putBoolean("Check20", sharedPreferences.getBoolean("Check20", true));
         sp.putBoolean("Check100", sharedPreferences.getBoolean("Check100", true));
+        sp.putInt("CheckCount",sharedPreferences.getInt("CheckCount", 5));
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
