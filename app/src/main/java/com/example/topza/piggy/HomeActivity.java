@@ -93,9 +93,9 @@ public class HomeActivity extends AppCompatActivity {
                     bt.send(Double.toString(balanceFragment.getCountMoney()), true);
                     Toast.makeText(HomeActivity.this, "Connection Complete", Toast.LENGTH_SHORT).show();
                 }
-                if (state == BluetoothState.STATE_NONE) {
-                    Toast.makeText(HomeActivity.this, "Service is Null", Toast.LENGTH_SHORT).show();
-                }
+//                if (state == BluetoothState.STATE_NONE) {
+//                    Toast.makeText(HomeActivity.this, "Service is Null", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
 

@@ -45,7 +45,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            >
 
             <TextView
                 android:id="@+id/TextCurrency"
@@ -70,13 +71,12 @@
 
         </LinearLayout>
 
-
-        <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/SliderFragment"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/CoinViewPager"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ImageSlider_Size"
-            android:layout_gravity="center"
-            />
+            android:layout_centerVertical="true">
+        </android.support.v4.view.ViewPager>
 
 
         <ImageView
@@ -102,7 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:freezesText="true"
-            android:text="Click to send THB 1.00 to Piggy"
+            android:text="Slide up to send THB 1.00 to Piggy"
             android:textColor="#9fffffff"
             android:textSize="20dp"
             android:layout_weight="1"/>
@@ -115,7 +115,8 @@
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin1"
         android:visibility="invisible"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
     <ImageView
         android:id="@+id/coin5Animation"
@@ -123,7 +124,8 @@
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin5"
         android:visibility="invisible"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
     <ImageView
         android:id="@+id/coin10Animation"
@@ -132,6 +134,7 @@
         android:src="@drawable/coin10"
         android:visibility="invisible"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         />
 
 </RelativeLayout>

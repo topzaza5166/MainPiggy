@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,11 +32,10 @@ import java.util.HashMap;
 /**
  * Created by nuuneoi on 11/16/2014.
  */
-public class BalanceFragment extends Fragment implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class BalanceFragment extends Fragment {
 
     HistoryTable history;
     DBHelper dbHelper;
-    SliderLayout coinSlider;
     TextView textCountMoney;
     TextView bottomText;
     CountDownTimer countDownTimer;
@@ -45,12 +46,14 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     TextView textAnimation;
     Button clearButton;
     ImageView iconArrowUp;
-    GestureDetector gestureDetector;
+    ViewPager coinViewPager;
 
     double countMoney = 0.00;
     int tokenCountMoney = 5;
     boolean startTicker = false;
-    int windowHeight, windowWidth;
+    int coinSelected[] = {0, 0, 0};
+    GestureDetector gestureDetector;
+    String coinTextSelected[] = {"", "", ""};
 
     View.OnClickListener ClearCount = new View.OnClickListener() {
         @Override
@@ -90,7 +93,6 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         textCurrency = (TextView) rootView.findViewById(R.id.TextCurrency);
         textAnimation = (TextView) rootView.findViewById(R.id.TextAnimation);
         bottomText = (TextView) rootView.findViewById(R.id.BottomTextFragment);
-        coinSlider = (SliderLayout) rootView.findViewById(R.id.SliderFragment);
         clearButton = (Button) rootView.findViewById(R.id.ClearButton);
         clearButton.setOnClickListener(ClearCount);
 
@@ -114,44 +116,15 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
         iconArrowUp = (ImageView) rootView.findViewById(R.id.ic_arrow_up);
 
-        initSlider();
-    }
+        coinSelected[0] = R.drawable.coin1;
+        coinSelected[1] = R.drawable.coin5;
+        coinSelected[2] = R.drawable.coin10;
 
-    private void initSlider() {
+        coinTextSelected[0] = "1.0";
+        coinTextSelected[1] = "5.0";
+        coinTextSelected[2] = "10.0";
 
-        HashMap<String, Integer> file_map = new HashMap<String, Integer>();
-        if (getArguments().getBoolean("Check1"))
-            file_map.put("1.00", R.drawable.coin1);
-        if (getArguments().getBoolean("Check100"))
-            file_map.put("100.00", R.drawable.coin1);
-        if (getArguments().getBoolean("Check10"))
-            file_map.put("10.00", R.drawable.coin10);
-        if (getArguments().getBoolean("Check5"))
-            file_map.put("5.00", R.drawable.coin5);
-        if (getArguments().getBoolean("Check20"))
-            file_map.put("20.00", R.drawable.coin1);
-
-        for (String name : file_map.keySet()) {
-            DefaultSliderView defaultSliderView = new DefaultSliderView(getContext());
-            defaultSliderView
-                    .image(file_map.get(name))
-                    .setScaleType(BaseSliderView.ScaleType.CenterInside)
-                    .setOnSliderClickListener(this);
-
-            //add your extra information
-            defaultSliderView.bundle(new Bundle());
-            defaultSliderView.getBundle()
-                    .putString("extra", name);
-
-            coinSlider.addSlider(defaultSliderView);
-        }
-
-        coinSlider.setPresetTransformer(SliderLayout.Transformer.Default);
-        coinSlider.addOnPageChangeListener(this);
-        coinSlider.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
-        coinSlider.stopAutoCycle();
-
-        gestureDetector = new GestureDetector(new GestureDetector.OnGestureListener() {
+        gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 return true;
@@ -159,8 +132,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
             @Override
             public void onShowPress(MotionEvent e) {
-                Toast.makeText(getContext(), "Press me", Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(getContext(), "Press me", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -175,21 +147,103 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
             @Override
             public void onLongPress(MotionEvent e) {
-                Toast.makeText(getContext(), "Long Press me", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Long Press me", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                return false;
+                if (e1.getY() > e2.getY()) {
+                    FlingUpFunction();
+                    return true;
+                }
+                //Toast.makeText(getContext(), "e1.getY = " + e1.getY() + "e2.getY = " + e2.getY(), Toast.LENGTH_SHORT).show();
+                else return false;
             }
         });
 
-        BaseSliderView current = coinSlider.getCurrentSlider();
-        String i = current.getBundle().getString("extra");
-        textCountMoney.setText(i);
+        coinViewPager = (ViewPager) rootView.findViewById(R.id.CoinViewPager);
+        coinViewPager.setAdapter(new PagerAdapter() {
+            @Override
+            public int getCount() {
+                return 3;
+            }
 
-        String s = "Click to send THB " + i + " to Piggy";
-        bottomText.setText(s);
+            @Override
+            public boolean isViewFromObject(View view, Object object) {
+                return view == object;
+            }
+
+            @Override
+            public Object instantiateItem(ViewGroup container, int position) {
+                ImageView coin = new ImageView(container.getContext());
+                coin.setImageResource(coinSelected[position]);
+                coin.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return gestureDetector.onTouchEvent(event);
+                    }
+                });
+                container.addView(coin);
+                return coin;
+            }
+
+            @Override
+            public void destroyItem(ViewGroup container, int position, Object object) {
+                container.removeView((View) object);
+            }
+        });
+
+        coinViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                String i = coinTextSelected[position];
+                textCountMoney.setText(i);
+
+                String s = "Slide up to send THB " + i + " to Piggy";
+                bottomText.setText(s);
+
+                //Toast.makeText(getContext(), "This position is" + position, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+    }
+
+    private void FlingUpFunction() {
+        String addMoney = coinTextSelected[coinViewPager.getCurrentItem()];
+        countMoney = countMoney + Double.parseDouble(addMoney);
+
+        String s = Double.toString(countMoney);
+        Calendar rightNow = Calendar.getInstance();
+
+        history = new HistoryTable();
+        history.setHistoryApp("Piggy");
+        history.setHistoryMoney(addMoney);
+        history.setHistoryTime(rightNow.get(Calendar.HOUR_OF_DAY) + ":" + rightNow.get(Calendar.MINUTE));
+        history.setHistoryIO("Output");
+
+        dbHelper.addHistory(history);
+
+        ((HomeActivity) getActivity()).sendBluetoothText(s);
+
+        textAnimation.setText("THB " + addMoney + " to Piggy");
+        Animation textFadeAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        textAnimation.startAnimation(textFadeAnimation);
+
+        if (addMoney == "5.0") {
+            coinAnimation(coin5);
+        } else coinAnimation(coin1);
+
+        ((HomeActivity) getActivity()).setTextCredit(countMoney);
 
     }
 
@@ -223,92 +277,6 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
             // Restore Instance State here
             countMoney = savedInstanceState.getDouble("CountMoney");
         }
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        BaseSliderView current = coinSlider.getCurrentSlider();
-
-        String i = current.getBundle().getString("extra");
-        textCountMoney.setText(i);
-
-        String s = "Click to send THB " + i + " to Piggy";
-        bottomText.setText(s);
-
-        //Toast.makeText(getContext(), position + "", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-    }
-
-    @Override
-    public void onSliderClick(BaseSliderView slider) {
-        String addMoney = slider.getBundle().getString("extra");
-        countMoney = countMoney + Double.parseDouble(addMoney);
-
-        String s = Double.toString(countMoney);
-        Calendar rightNow = Calendar.getInstance();
-
-        history = new HistoryTable();
-        history.setHistoryApp("Piggy");
-        history.setHistoryMoney(addMoney);
-        history.setHistoryTime(rightNow.get(Calendar.HOUR_OF_DAY) + ":" + rightNow.get(Calendar.MINUTE));
-        history.setHistoryIO("Output");
-
-        dbHelper.addHistory(history);
-
-        ((HomeActivity) getActivity()).sendBluetoothText(s);
-
-        textAnimation.setText("THB " + addMoney + " to Piggy");
-        Animation textFadeAnimation = AnimationUtils.loadAnimation(getContext(),R.anim.fade_in);
-        textAnimation.startAnimation(textFadeAnimation);
-
-        windowWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
-        windowHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
-
-//        if (addMoney == "5.00") {
-//            coin5.setVisibility(View.VISIBLE);
-//            coin5.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) coin5.getLayoutParams();
-//                    switch(event.getAction()) {
-//                        case MotionEvent.ACTION_DOWN:
-//                            break;
-//                        case MotionEvent.ACTION_MOVE:
-//                            int x_cord = (int)event.getRawX();
-//                            int y_cord = (int)event.getRawY();
-//
-//                            if(x_cord > windowWidth){x_cord = windowWidth;}
-//                            if(y_cord > windowHeight){y_cord = windowHeight;}
-//
-//                            layoutParams.leftMargin = x_cord;
-//                            layoutParams.topMargin = y_cord;
-//
-//                            coin5.setLayoutParams(layoutParams);
-//                            if(layoutParams.topMargin == 100){
-//                                Animation textFadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-//                                textAnimation.startAnimation(textFadeInAnimation);
-//                                Toast.makeText(getContext(), "" + coinSlider.getCurrentPosition(), Toast.LENGTH_SHORT).show();
-//                            }
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                    return true;
-//                }
-//            });
-//
-//        } else coinAnimation(coin1);
-        coinAnimation(coin5);
-        ((HomeActivity)getActivity()).setTextCredit(countMoney);
-
-        //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
     }
 
     private void coinAnimation(final ImageView coin) {
@@ -351,7 +319,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         }
 
         bottomText.setVisibility(setting);
-        coinSlider.setVisibility(setting);
+        coinViewPager.setVisibility(setting);
         textCurrency.setVisibility(setting);
         textCountMoney.setVisibility(setting);
         iconArrowUp.setVisibility(setting);
