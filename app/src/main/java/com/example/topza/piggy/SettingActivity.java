@@ -3,17 +3,13 @@ package com.example.topza.piggy;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 public class SettingActivity extends AppCompatActivity {
@@ -28,6 +24,8 @@ public class SettingActivity extends AppCompatActivity {
     SharedPreferences sp;
 
     Toolbar toolbar;
+
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +70,20 @@ public class SettingActivity extends AppCompatActivity {
     private void saveSetting() {
         Boolean check = check1.isChecked()|| check5.isChecked()|| check10.isChecked()|| check20.isChecked()|| check100.isChecked();
         if(check) {
+
+            if(check1.isChecked()) count++;
+            if(check5.isChecked()) count++;
+            if(check10.isChecked()) count++;
+            if(check20.isChecked()) count++;
+            if(check100.isChecked()) count++;
+
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean("Check1",check1.isChecked());
             editor.putBoolean("Check5",check5.isChecked());
             editor.putBoolean("Check10",check10.isChecked());
             editor.putBoolean("Check20",check20.isChecked());
             editor.putBoolean("Check100",check100.isChecked());
+            editor.putInt("CheckCount",count);
             editor.commit();
 
             Bundle saveSetting = new Bundle();
@@ -86,11 +92,13 @@ public class SettingActivity extends AppCompatActivity {
             saveSetting.putBoolean("Check10",check10.isChecked());
             saveSetting.putBoolean("Check20",check20.isChecked());
             saveSetting.putBoolean("Check100",check100.isChecked());
+            saveSetting.putInt("CheckCount",count);
 
             Intent returnIntent = new Intent();
             returnIntent.putExtra("SaveSetting",saveSetting);
             setResult(RESULT_OK,returnIntent);
             finish();
+
         } else Toast.makeText(SettingActivity.this, "Please set one or more Coin", Toast.LENGTH_SHORT).show();
     }
 
