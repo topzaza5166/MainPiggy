@@ -5,14 +5,18 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.slider.library.Indicators.PagerIndicator;
 import com.daimajia.slider.library.SliderLayout;
@@ -41,6 +45,7 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
     TextView textAnimation;
     Button clearButton;
     ImageView iconArrowUp;
+    GestureDetector gestureDetector;
 
     double countMoney = 0.00;
     int tokenCountMoney = 5;
@@ -146,6 +151,39 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         coinSlider.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
         coinSlider.stopAutoCycle();
 
+        gestureDetector = new GestureDetector(new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public void onShowPress(MotionEvent e) {
+                Toast.makeText(getContext(), "Press me", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return false;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Toast.makeText(getContext(), "Long Press me", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                return false;
+            }
+        });
+
         BaseSliderView current = coinSlider.getCurrentSlider();
         String i = current.getBundle().getString("extra");
         textCountMoney.setText(i);
@@ -189,7 +227,6 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
     }
 
     @Override
@@ -234,7 +271,8 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
         windowWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
         windowHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
 
-        if (addMoney == "5.00") {
+//        if (addMoney == "5.00") {
+//            coin5.setVisibility(View.VISIBLE);
 //            coin5.setOnTouchListener(new View.OnTouchListener() {
 //                @Override
 //                public boolean onTouch(View v, MotionEvent event) {
@@ -265,9 +303,9 @@ public class BalanceFragment extends Fragment implements BaseSliderView.OnSlider
 //                    return true;
 //                }
 //            });
-            coinAnimation(coin5);
-        } else coinAnimation(coin1);
-
+//
+//        } else coinAnimation(coin1);
+        coinAnimation(coin5);
         ((HomeActivity)getActivity()).setTextCredit(countMoney);
 
         //Toast.makeText(getContext(), "Add " + addMoney + " To Piggy Your Money are " + countMoney, Toast.LENGTH_SHORT).show();
