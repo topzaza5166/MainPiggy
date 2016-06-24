@@ -25,19 +25,11 @@
 
 
         <FrameLayout
-            android:id="@+id/contentContainer"
+            android:id="@+id/select_device_page"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#fff">
 
-            <Button
-                android:id="@+id/btnConnect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="right"
-                android:layout_alignParentTop="true"
-                android:text="Connect"
-                android:visibility="visible"/>
 
         </FrameLayout>
 
