@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 
 public class SelectDeviceFragment extends Fragment {
@@ -14,6 +15,8 @@ public class SelectDeviceFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
+    ListView listView;
+    HistoryListAdapter historyListAdapter;
 
     public static SelectDeviceFragment newInstance(String param1, String param2) {
         SelectDeviceFragment fragment = new SelectDeviceFragment();
@@ -36,7 +39,16 @@ public class SelectDeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.select_device_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.account_fragment, container, false);
+        initInstances(rootView);
+        return rootView;
+    }
+
+    private void initInstances(View rootView) {
+        // Init 'View' instance(s) with rootView.findViewById here
+        listView = (ListView) rootView.findViewById(R.id.fragmentDeviceListView);
+        historyListAdapter = new HistoryListAdapter();
+        historyListAdapter.setDatabase(getContext());
+        listView.setAdapter(historyListAdapter);
     }
 }
