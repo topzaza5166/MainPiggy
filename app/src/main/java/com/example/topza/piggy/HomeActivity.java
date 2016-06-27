@@ -121,7 +121,12 @@ public class HomeActivity extends AppCompatActivity {
                 if(bt.getServiceState() == BluetoothState.STATE_CONNECTED) {
                     bt.disconnect();
                 } else {
-                    setup();
+                    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.select_device_page);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.contentContainer, fragment)
+                            .addToBackStack(null)
+                            .commit();
+//                    setup();
                 }
             }
         });

@@ -51,6 +51,8 @@ public class DeviceList extends Activity {
     private Set<BluetoothDevice> pairedDevices;
     private Button scanButton;
 
+    public String name_device = "";
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -63,6 +65,7 @@ public class DeviceList extends Activity {
         if(strBluetoothDevices == null) 
         	strBluetoothDevices = "Bluetooth Devices";
         setTitle(strBluetoothDevices);
+        name_device = strBluetoothDevices;
         
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
