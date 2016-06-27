@@ -31,9 +31,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
-import app.akexorcist.bluetotohspp.library.BluetoothState;
-import app.akexorcist.bluetotohspp.library.DeviceList;
+import app.akexorcist.bluetoothspp.BluetoothSPP;
+import app.akexorcist.bluetoothspp.BluetoothState;
+import app.akexorcist.bluetoothspp.DeviceList;
+
 
 public class HomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
@@ -222,7 +223,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-
         Float count = preferences.getFloat("CountMoney", 0);
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
         balanceFragment.setCountMoney((double) count);
@@ -319,8 +319,14 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
-            if (resultCode == Activity.RESULT_OK)
+            if (resultCode == Activity.RESULT_OK){
                 bt.connect(data);
+                // String address_piggy = data.getExtras().getString(BluetoothState.EXTRA_DEVICE_ADDRESS);
+                // BluetoothAdapter mBluetoothAdapter = null;
+                // BluetoothService mChatService = null;
+                // BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address_piggy);
+                // mChatService.connect(device);
+            }
         } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 bt.setupService();
