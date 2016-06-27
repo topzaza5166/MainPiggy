@@ -26,11 +26,9 @@ public class SelectDeviceFragment extends Fragment {
     HistoryListAdapter historyListAdapter;
     BluetoothAdapter mBtAdapter;
 
-    public static SelectDeviceFragment newInstance(String param1, String param2) {
+    public static SelectDeviceFragment newInstance() {
         SelectDeviceFragment fragment = new SelectDeviceFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }

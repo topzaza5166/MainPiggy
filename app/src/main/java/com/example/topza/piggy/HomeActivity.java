@@ -123,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
                 } else {
                     Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.select_device_page);
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.contentContainer, fragment)
+                            .replace(R.id.contentContainer, SelectDeviceFragment.newInstance(), "Select Device")
                             .addToBackStack(null)
                             .commit();
 //                    setup();
