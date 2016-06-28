@@ -45,18 +45,27 @@ public class SelectDeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.account_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.select_device_fragment, container, false);
         initInstances(rootView);
         return rootView;
     }
 
     private void initInstances(View rootView) {
-        // Init 'View' instance(s) with rootView.findViewById here
-        listView = (ListView) rootView.findViewById(R.id.fragmentDeviceListView);
-        historyListAdapter = new HistoryListAdapter();
-        historyListAdapter.setDatabase(getContext());
-        listView.setAdapter(historyListAdapter);
-        listView.setOnItemClickListener(mDeviceClickListener);
+        String[] save_list = { "Aerith Gainsborough", "Barret Wallace", "Cait Sith"
+                , "Cid Highwind", "Cloud Strife", "RedXIII", "Sephiroth"
+                , "Tifa Lockhart", "Vincent Valentine", "Yuffie Kisaragi"
+                , "ZackFair" };
+
+        String[] device_list = { "device 1", "device 2", "device 3"
+                , "device 4", "device 5", "device 6", "device 7"
+                , "device 8", "device 9", "device 10"
+                , "device 11" };
+
+        DeviceAdapter adapter = new DeviceAdapter(getActivity().getApplicationContext(), save_list, device_list);
+
+        ListView listView1 = (ListView)getActivity().findViewById(R.id.fragmentDeviceListView);
+        listView1.setAdapter(adapter);
+//        listView.setOnItemClickListener(mDeviceClickListener);
     }
 
     private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
