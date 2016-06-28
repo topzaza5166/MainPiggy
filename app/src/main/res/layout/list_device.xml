@@ -38,7 +38,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="0dp"
                 android:text="Device Name : "
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:textColor="#888"/>
 
             <TextView
                 android:id="@+id/CustomListTextDeviceName"
@@ -47,7 +48,8 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginTop="0dp"
                 android:text="piggy"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginBottom="5dp"
+                android:textColor="#888"/>
 
         </LinearLayout>
     </LinearLayout>

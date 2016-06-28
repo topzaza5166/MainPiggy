@@ -51,10 +51,7 @@ public class SelectDeviceFragment extends Fragment {
     }
 
     private void initInstances(View rootView) {
-        String[] save_list = { "Aerith Gainsborough", "Barret Wallace", "Cait Sith"
-                , "Cid Highwind", "Cloud Strife", "RedXIII", "Sephiroth"
-                , "Tifa Lockhart", "Vincent Valentine", "Yuffie Kisaragi"
-                , "ZackFair" };
+        String[] save_list = new String[10];
 
         String[] device_list = { "device 1", "device 2", "device 3"
                 , "device 4", "device 5", "device 6", "device 7"
@@ -63,7 +60,7 @@ public class SelectDeviceFragment extends Fragment {
 
         DeviceAdapter adapter = new DeviceAdapter(getActivity().getApplicationContext(), save_list, device_list);
 
-        ListView listView1 = (ListView)getActivity().findViewById(R.id.fragmentDeviceListView);
+        ListView listView1 = (ListView)rootView.findViewById(R.id.fragmentDeviceListView);
         listView1.setAdapter(adapter);
 //        listView.setOnItemClickListener(mDeviceClickListener);
     }
