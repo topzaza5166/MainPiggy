@@ -23,7 +23,7 @@ public class DeviceAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return 0;
+        return save_name.length;
     }
 
     public Object getItem(int position) {

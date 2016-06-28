@@ -35,7 +35,7 @@
             </FrameLayout>
 
             <Button
-                android:id="@+id/btnConnect"
+                android:id="@+id/btnAddConnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
