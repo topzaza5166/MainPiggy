@@ -41,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     ActionBarDrawerToggle actionBarDrawerToggle;
     Toolbar toolbar;
     NavigationView navigation;
-    BluetoothSPP bt;
+    public static BluetoothSPP bt;
     SharedPreferences preferences;
     SharedPreferences sharedPreferences;
     BalanceFragment balanceFragment;

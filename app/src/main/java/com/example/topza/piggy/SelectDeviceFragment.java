@@ -9,10 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import app.akexorcist.bluetoothspp.BluetoothSPP;
 import app.akexorcist.bluetoothspp.BluetoothState;
+import app.akexorcist.bluetoothspp.DeviceList;
 
 
 public class SelectDeviceFragment extends Fragment {
@@ -47,7 +50,47 @@ public class SelectDeviceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.select_device_fragment, container, false);
         initInstances(rootView);
+
+//        HomeActivity.bt = new BluetoothSPP(getActivity().getApplicationContext());
+//        setBluetooth();
         return rootView;
+    }
+
+    private void setBluetooth() {
+        if (!HomeActivity.bt.isBluetoothAvailable()) {
+            Toast.makeText(getActivity().getApplicationContext(), "Bluetooth is not available"
+                    , Toast.LENGTH_SHORT).show();
+            getActivity().finish();
+        }
+
+        HomeActivity.bt.setBluetoothStateListener(new BluetoothSPP.BluetoothStateListener() {
+            @Override
+            public void onServiceStateChanged(int state) {
+                if (state == BluetoothState.STATE_CONNECTED) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Connection Complete", Toast.LENGTH_SHORT).show();
+                }
+//                if (state == BluetoothState.STATE_NONE) {
+//                    Toast.makeText(HomeActivity.this, "Service is Null", Toast.LENGTH_SHORT).show();
+//                }
+            }
+        });
+
+        HomeActivity.bt.setBluetoothConnectionListener(new BluetoothSPP.BluetoothConnectionListener() {
+            public void onDeviceConnected(String name, String address) {
+                Toast.makeText(getActivity().getApplicationContext(), "Connected to " + name + "\n" + address
+                        , Toast.LENGTH_SHORT).show();
+            }
+
+            public void onDeviceDisconnected() {
+                Toast.makeText(getActivity().getApplicationContext(), "Connection lost"
+                        , Toast.LENGTH_SHORT).show();
+            }
+
+            public void onDeviceConnectionFailed() {
+                Toast.makeText(getActivity().getApplicationContext(), "Unable to connect"
+                        , Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initInstances(View rootView) {
@@ -62,31 +105,51 @@ public class SelectDeviceFragment extends Fragment {
 
         ListView listView1 = (ListView)rootView.findViewById(R.id.fragmentDeviceListView);
         listView1.setAdapter(adapter);
-//        listView.setOnItemClickListener(mDeviceClickListener);
+        listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
+                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                Toast.makeText(getActivity().getApplicationContext(), "1234"
+                        , Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Button add_new_device = (Button)rootView.findViewById(R.id.btnAddConnect);
+        add_new_device.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(HomeActivity.bt.getServiceState() == BluetoothState.STATE_CONNECTED) {
+                    HomeActivity.bt.disconnect();
+                } else {
+                    Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
+                    startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+                }
+                Toast.makeText(getActivity().getApplicationContext(), "5678"
+                        , Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-            // Cancel discovery because it's costly and we're about to connect
-            if(mBtAdapter.isDiscovering())
-                mBtAdapter.cancelDiscovery();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-            String strNoFound = getActivity().getIntent().getStringExtra("no_devices_found");
-            if(strNoFound == null)
-                strNoFound = "No devices found";
-            if(!((TextView) v).getText().toString().equals(strNoFound)) {
-                // Get the device MAC address, which is the last 17 chars in the View
-                String info = ((TextView) v).getText().toString();
-                String address = info.substring(info.length() - 17);
-
-                // Create the result Intent and include the MAC address
-                Intent intent = new Intent();
-                intent.putExtra(BluetoothState.EXTRA_DEVICE_ADDRESS, address);
-
-                // Set result and finish this Activity
-                getActivity().setResult(Activity.RESULT_OK, intent);
+        if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
+            if (resultCode == Activity.RESULT_OK){
+                HomeActivity.bt.connect(data);
+            }
+        } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
+            if (resultCode == Activity.RESULT_OK) {
+                HomeActivity.bt.setupService();
+                HomeActivity.bt.startService(BluetoothState.DEVICE_ANDROID);
+                Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
+                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
+            } else {
+                Toast.makeText(getActivity().getApplicationContext(), "Bluetooth was not enabled."
+                        , Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         }
-    };
+
+    }
 }
