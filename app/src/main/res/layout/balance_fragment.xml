@@ -30,7 +30,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
 
         <ImageView
@@ -114,7 +114,7 @@
         android:layout_width="@dimen/ImageSlider_Size"
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin1"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
@@ -123,7 +123,7 @@
         android:layout_width="@dimen/ImageSlider_Size"
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin5"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
 
@@ -132,7 +132,7 @@
         android:layout_width="@dimen/ImageSlider_Size"
         android:layout_height="@dimen/ImageSlider_Size"
         android:src="@drawable/coin10"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         />

@@ -3,6 +3,7 @@ package com.example.topza.piggy;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,8 +37,8 @@ public class SelectDeviceFragment extends Fragment {
     ListView listView;
     HistoryListAdapter historyListAdapter;
     BluetoothAdapter mBtAdapter;
-    SharedPreferences save_name_bluetooth = getActivity().getSharedPreferences("save_bluetooth", 0);
-    SharedPreferences.Editor save_edit = save_name_bluetooth.edit();
+    SharedPreferences save_name_bluetooth;
+    SharedPreferences.Editor save_edit;
     Set<String> save_list = new HashSet<>();
 
     public static SelectDeviceFragment newInstance() {
@@ -61,8 +62,10 @@ public class SelectDeviceFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.select_device_fragment, container, false);
         initInstances(rootView);
-        save_list = save_name_bluetooth.getStringSet("save_list_bluetooth", null);
 
+        save_name_bluetooth = getActivity().getSharedPreferences("save_bluetooth", Context.MODE_PRIVATE);
+        save_list = save_name_bluetooth.getStringSet("save_list_bluetooth", null);
+        save_edit = save_name_bluetooth.edit();
         return rootView;
     }
 
