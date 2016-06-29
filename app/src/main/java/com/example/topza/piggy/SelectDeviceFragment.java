@@ -38,10 +38,11 @@ public class SelectDeviceFragment extends Fragment {
     HistoryListAdapter historyListAdapter;
     BluetoothAdapter mBtAdapter;
     DeviceAdapter adapter;
-    SharedPreferences save_name_bluetooth, device_name;
-    SharedPreferences.Editor save_edit, device_edit;
+    SharedPreferences save_name_bluetooth;
+    SharedPreferences.Editor save_edit;
     Set<String> save_list = new HashSet<>();
-    Set<String> device_list = new HashSet<>();
+    Set<String> connect_save_list = new HashSet<>();
+    String[] device_list;
 
     public static SelectDeviceFragment newInstance() {
         SelectDeviceFragment fragment = new SelectDeviceFragment();
@@ -67,28 +68,26 @@ public class SelectDeviceFragment extends Fragment {
 
         save_name_bluetooth = getActivity().getSharedPreferences("save_bluetooth", Context.MODE_PRIVATE);
         save_list = save_name_bluetooth.getStringSet("save_list_bluetooth", new HashSet<String>());
+        connect_save_list = save_name_bluetooth.getStringSet("save_connect_list_bluetooth", new HashSet<String>());
         save_edit = save_name_bluetooth.edit();
-
-        device_name = getActivity().getSharedPreferences("device_name_bluetooth", Context.MODE_PRIVATE);
-        device_list = device_name.getStringSet("bluetooth_device", new HashSet<String>());
-        device_edit = device_name.edit();
         return rootView;
     }
 
     private void initInstances(View rootView) {
+        device_list = new String[]{ "device 1", "device 2", "device 3"
+                , "device 4", "device 5", "device 6", "device 7"
+                , "device 8", "device 9", "device 10"
+                , "device 11" };
 
         adapter = new DeviceAdapter(getActivity().getApplicationContext(),
-                save_list.toArray(new String[save_list.size()]), device_list.toArray(new String[device_list.size()]));
+                save_list.toArray(new String[save_list.size()]), device_list);
 
         listView1 = (ListView)rootView.findViewById(R.id.fragmentDeviceListView);
         listView1.setAdapter(adapter);
         listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
-                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
-//                Toast.makeText(getActivity().getApplicationContext(), "1234"
-//                        , Toast.LENGTH_SHORT).show();
+                HomeActivity.bt.autoConnect(connect_save_list.toArray(new String[connect_save_list.size()])[DeviceAdapter.device_position]);
             }
         });
 
@@ -114,6 +113,8 @@ public class SelectDeviceFragment extends Fragment {
         if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if (resultCode == Activity.RESULT_OK){
                 HomeActivity.bt.connect(data);
+                connect_save_list.add(DeviceList.name_device);
+                save_edit.putStringSet("save_connect_list_bluetooth", connect_save_list).commit();
             }
         } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
@@ -140,14 +141,12 @@ public class SelectDeviceFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 save_list.add(bluetooth_name.getText().toString());
                 save_edit.putStringSet("save_list_bluetooth", save_list).commit();
-//                device_list.add(DeviceList.name_device);
-                device_edit.putStringSet("bluetooth_device", device_list).commit();
                 Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
                 startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
 //                HomeActivity.bt.autoConnect(bluetooth_name.getText().toString());
 
                 adapter = new DeviceAdapter(getActivity().getApplicationContext(),
-                        save_list.toArray(new String[save_list.size()]), device_list.toArray(new String[device_list.size()]));
+                        save_list.toArray(new String[save_list.size()]), device_list);
                 listView1.setAdapter(adapter);
             }
         });
