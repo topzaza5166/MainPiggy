@@ -32,7 +32,7 @@ public class HistoryListAdapter extends BaseAdapter {
     @Override
     public Object getItem(int position) {
         HistoryTable history = new HistoryTable();
-        itemList.moveToPosition(position);
+        itemList.moveToPosition((count - position)-1);
 
         if(itemList != null){
             history.setId(itemList.getInt(0));

@@ -25,10 +25,10 @@
         android:layout_alignBottom="@id/topbar"
         android:background="#0f000000" />
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
@@ -51,8 +51,7 @@
             app:met_iconLeft="@drawable/rectangle45"
             app:met_primaryColor="#f3ac1d"
             app:met_textColorHint="#fff"
-            app:met_underlineColor="#fff"
-            />
+            app:met_underlineColor="#fff" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/EditPin"
@@ -65,8 +64,8 @@
             app:met_baseColor="#ffffff"
             app:met_iconLeft="@drawable/group7"
             app:met_primaryColor="#f3ac1d"
-            app:met_underlineColor="#ffffff"
-            app:met_textColorHint="#fff"/>
+            app:met_textColorHint="#fff"
+            app:met_underlineColor="#ffffff" />
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/EditActivateCode"
@@ -78,8 +77,8 @@
             app:met_baseColor="#ffffff"
             app:met_iconLeft="@drawable/star4"
             app:met_primaryColor="#f3ac1d"
-            app:met_underlineColor="#fff"
-            app:met_textColorHint="#fff"/>
+            app:met_textColorHint="#fff"
+            app:met_underlineColor="#fff" />
 
     </LinearLayout>
 
