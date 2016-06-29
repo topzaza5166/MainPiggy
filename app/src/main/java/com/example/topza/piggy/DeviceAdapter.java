@@ -15,6 +15,7 @@ public class DeviceAdapter extends BaseAdapter {
     Context mContext;
     String[] save_name;
     String[] device_name;
+    public static int device_position;
 
     public DeviceAdapter(Context context, String[] save_name, String[] device_name) {
         this.mContext= context;
@@ -45,6 +46,8 @@ public class DeviceAdapter extends BaseAdapter {
 
         TextView textView2 = (TextView)view.findViewById(R.id.CustomListTextDeviceName);
         textView2.setText(device_name[position]);
+
+        device_position = position;
         return view;
     }
 }
