@@ -51,7 +51,7 @@ public class DeviceList extends Activity {
     private Set<BluetoothDevice> pairedDevices;
     private Button scanButton;
 
-    public String name_device = "";
+    public static String name_device = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
