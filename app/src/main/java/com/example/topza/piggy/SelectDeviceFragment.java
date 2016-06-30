@@ -43,6 +43,7 @@ public class SelectDeviceFragment extends Fragment {
     Set<String> save_list = new HashSet<>();
     Set<String> connect_save_list = new HashSet<>();
     String[] device_list;
+    String vir_save_name = "";
 
     public static SelectDeviceFragment newInstance() {
         SelectDeviceFragment fragment = new SelectDeviceFragment();
@@ -79,15 +80,17 @@ public class SelectDeviceFragment extends Fragment {
                 , "device 8", "device 9", "device 10"
                 , "device 11" };
 
+        listView1 = (ListView)rootView.findViewById(R.id.fragmentDeviceListView);
         adapter = new DeviceAdapter(getActivity().getApplicationContext(),
                 save_list.toArray(new String[save_list.size()]), device_list);
-
-        listView1 = (ListView)rootView.findViewById(R.id.fragmentDeviceListView);
         listView1.setAdapter(adapter);
         listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                HomeActivity.bt.autoConnect(connect_save_list.toArray(new String[connect_save_list.size()])[DeviceAdapter.device_position]);
+                HomeActivity.bt.disconnect();
+                HomeActivity.bt.autoConnect(connect_save_list.toArray(new String[connect_save_list.size()])[position]);
+                Toast.makeText(getActivity().getApplicationContext(), connect_save_list.toArray(new String[connect_save_list.size()])[position]
+                        , Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -112,9 +115,19 @@ public class SelectDeviceFragment extends Fragment {
 
         if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if (resultCode == Activity.RESULT_OK){
-                HomeActivity.bt.connect(data);
-                connect_save_list.add(DeviceList.name_device);
-                save_edit.putStringSet("save_connect_list_bluetooth", connect_save_list).commit();
+                if(connect_save_list.contains(DeviceList.name_device)){
+                    checkConsistencyOfBluetooth((AppCompatActivity) getActivity(), "Bluetooth create error",
+                            "This connection has been register already.", "OK");
+                } else{
+                    HomeActivity.bt.connect(data);
+                    connect_save_list.add(DeviceList.name_device);
+                    save_edit.putStringSet("save_connect_list_bluetooth", connect_save_list).commit();
+                    save_list.add(vir_save_name);
+                    save_edit.putStringSet("save_list_bluetooth", save_list).commit();
+                    adapter = new DeviceAdapter(getActivity().getApplicationContext(),
+                            save_list.toArray(new String[save_list.size()]), device_list);
+                    listView1.setAdapter(adapter);
+                }
             }
         } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
@@ -139,15 +152,23 @@ public class SelectDeviceFragment extends Fragment {
         downloadDialog.setTitle(title).setMessage(message).setPositiveButton(buttonYes, new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                save_list.add(bluetooth_name.getText().toString());
-                save_edit.putStringSet("save_list_bluetooth", save_list).commit();
                 Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
                 startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
 //                HomeActivity.bt.autoConnect(bluetooth_name.getText().toString());
+                vir_save_name = bluetooth_name.getText().toString();
+            }
+        });
+        return downloadDialog.show();
+    }
 
-                adapter = new DeviceAdapter(getActivity().getApplicationContext(),
-                        save_list.toArray(new String[save_list.size()]), device_list);
-                listView1.setAdapter(adapter);
+    private AlertDialog checkConsistencyOfBluetooth(final AppCompatActivity act, CharSequence title,
+                                                   CharSequence message, CharSequence buttonYes){
+        AlertDialog.Builder downloadDialog = new AlertDialog.Builder(act);
+        downloadDialog.setTitle(title).setMessage(message).setPositiveButton(buttonYes, new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getActivity().getApplicationContext(), DeviceList.class);
+                startActivityForResult(intent, BluetoothState.REQUEST_CONNECT_DEVICE);
             }
         });
         return downloadDialog.show();

@@ -65,7 +65,7 @@ public class DeviceList extends Activity {
         if(strBluetoothDevices == null) 
         	strBluetoothDevices = "Bluetooth Devices";
         setTitle(strBluetoothDevices);
-        name_device = strBluetoothDevices;
+
         
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
@@ -180,7 +180,7 @@ public class DeviceList extends Activity {
 	            // Get the device MAC address, which is the last 17 chars in the View
 	            String info = ((TextView) v).getText().toString();
 	            String address = info.substring(info.length() - 17);
-	            
+	            name_device = info.substring(0, info.length() - 17).trim();
 	            // Create the result Intent and include the MAC address
 	            Intent intent = new Intent();
 	            intent.putExtra(BluetoothState.EXTRA_DEVICE_ADDRESS, address);
