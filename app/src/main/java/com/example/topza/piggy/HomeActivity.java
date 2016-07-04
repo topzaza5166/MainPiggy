@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     BalanceFragment balanceFragment;
     ImageView imageAvatar;
     TextView textCredit;
-    int check_state = 0;
+    double userCredit = 0;
     private static final int PICK_PHOTO_FOR_AVATAR = 0001;
     private static final int Setting_Activity = 0010;
 
@@ -76,6 +76,8 @@ public class HomeActivity extends AppCompatActivity {
         bt = new BluetoothSPP(this);
         setBluetooth();
 
+        userCredit = 250.00;
+        textCredit.setText("THB " + userCredit);
     }
 
     private void setBluetooth() {
@@ -129,7 +131,8 @@ public class HomeActivity extends AppCompatActivity {
                                 .addToBackStack(null)
                                 .commit();
 //                      setup();
-                    }else Toast.makeText(HomeActivity.this, "Please Select Connection Device", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(HomeActivity.this, "Please Select Connection Device", Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -235,8 +238,6 @@ public class HomeActivity extends AppCompatActivity {
         Float count = preferences.getFloat("CountMoney", 0);
         balanceFragment = (BalanceFragment) getSupportFragmentManager().findFragmentByTag("BalanceFragment");
         balanceFragment.setCountMoney((double) count);
-
-        textCredit.setText("THB " + count);
     }
 
     private void setup() {
@@ -255,6 +256,7 @@ public class HomeActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putFloat("CountMoney", (float) balanceFragment.getCountMoney());
+//        editor.putFloat("UserCredit", (float) userCredit);
         editor.commit();
     }
 
@@ -322,7 +324,8 @@ public class HomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
-            Bitmap avatarBitmap = BitmapFactory.decodeStream(inputStream);
+            Bitmap b = BitmapFactory.decodeStream(inputStream);
+            Bitmap avatarBitmap = Bitmap.createScaledBitmap(b, 120, 120, false);
             imageAvatar.setImageBitmap(avatarBitmap);
             saveImageData(avatarBitmap);
         }
@@ -340,7 +343,6 @@ public class HomeActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 bt.setupService();
                 bt.startService(BluetoothState.DEVICE_ANDROID);
-                setup();
             } else {
                 Toast.makeText(getApplicationContext(), "Bluetooth was not enabled."
                         , Toast.LENGTH_SHORT).show();
@@ -384,6 +386,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void setTextCredit(Double count) {
-        textCredit.setText("THB " + count);
+        userCredit = userCredit - count;
+        textCredit.setText("THB " + userCredit);
     }
 }

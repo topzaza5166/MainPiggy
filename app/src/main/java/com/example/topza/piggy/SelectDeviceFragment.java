@@ -151,6 +151,7 @@ public class SelectDeviceFragment extends Fragment {
         AlertDialog.Builder downloadDialog = new AlertDialog.Builder(act);
         final EditText bluetooth_name = new EditText(getContext());
         bluetooth_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        
         downloadDialog.setView(bluetooth_name);
         downloadDialog.setTitle(title).setMessage(message).setPositiveButton(buttonYes, new DialogInterface.OnClickListener(){
             @Override

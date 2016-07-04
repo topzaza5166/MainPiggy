@@ -96,18 +96,6 @@ public class BalanceFragment extends Fragment {
         clearButton = (Button) rootView.findViewById(R.id.ClearButton);
         clearButton.setOnClickListener(ClearCount);
 
-        countDownTimer = new CountDownTimer(25000, 5000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if (tokenCountMoney < 5) tokenCountMoney++;
-            }
-
-            @Override
-            public void onFinish() {
-                startTicker = false;
-            }
-        };
-
         dbHelper = new DBHelper(getContext());
 
         coin1 = (ImageView) rootView.findViewById(R.id.coin1Animation);
@@ -269,7 +257,7 @@ public class BalanceFragment extends Fragment {
             coinAnimation(coin5);
         } else coinAnimation(coin1);
 
-        ((HomeActivity) getActivity()).setTextCredit(countMoney);
+        ((HomeActivity) getActivity()).setTextCredit(Double.parseDouble(addMoney));
 
     }
 
