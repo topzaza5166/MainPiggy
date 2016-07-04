@@ -31,16 +31,16 @@
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".HomeActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="5e64558e96f08905ccba1eb5a7c7497d4ef0e739" />
 
-        <activity android:name=".SettingActivity"
-            android:theme="@style/Theme.MyActivityTheme">
-
-        </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:theme="@style/Theme.MyActivityTheme" />
+        <activity android:name=".ImageManager"></activity>
     </application>
 
 </manifest>

@@ -311,23 +311,27 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
-            InputStream inputStream = new InputStream() {
-                @Override
-                public int read() throws IOException {
-                    return 0;
-                }
-            };
+//            InputStream inputStream = new InputStream() {
+//                @Override
+//                public int read() throws IOException {
+//                    return 0;
+//                }
+//            };
+//
+//            try {
+//                inputStream = this.getContentResolver().openInputStream(data.getData());
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
+//            Bitmap b = BitmapFactory.decodeStream(inputStream);
+//            Bitmap avatarBitmap = Bitmap.createScaledBitmap(b, 120, 120, false);
 
-            try {
-                inputStream = this.getContentResolver().openInputStream(data.getData());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            //Now you can do whatever you want with your inputStream, save it as file, upload to a server, decode a bitmap...
-            Bitmap b = BitmapFactory.decodeStream(inputStream);
-            Bitmap avatarBitmap = Bitmap.createScaledBitmap(b, 120, 120, false);
+            byte[] byteArray = data.getByteArrayExtra("image");
+            Bitmap avatarBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             imageAvatar.setImageBitmap(avatarBitmap);
-            saveImageData(avatarBitmap);
+            saveImageData(byteArray);
+            avatarBitmap.recycle();
         }
 
         if (requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
@@ -353,15 +357,19 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void pickImage() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
+
+        Intent intent = new Intent(this,ImageManager.class);
         startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
+
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        startActivityForResult(intent, PICK_PHOTO_FOR_AVATAR);
     }
 
-    public void saveImageData(Bitmap realImage) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        realImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] b = baos.toByteArray();
+    public void saveImageData(byte[] b) {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        realImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//        byte[] b = baos.toByteArray();
 
         String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
